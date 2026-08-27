@@ -22,7 +22,7 @@ Page({
   },
 
   onShow() {
-    if (!auth.requireCustomer()) return
+    if (!auth.requireLogin()) return
     this.refresh()
   },
 
