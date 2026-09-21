@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "用户",
-  "enablePullDownRefresh": true,
-  "usingComponents": {
-    "admin-tabbar": "/components/admin-tabbar/admin-tabbar"
-  }
-}

@@ -1,2 +1,0 @@
-<web-view wx:if="{{src}}" src="{{src}}" binderror="onWebError"></web-view>
-<view wx:else class="error">{{error || '无法打开原网址'}}</view>
