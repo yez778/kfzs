@@ -6,6 +6,7 @@
     "pages/cashier/cashier",
     "pages/chat/chat",
     "pages/history/history",
+    "pages/aftersale/aftersale",
     "pages/orders/orders",
     "pages/mine/mine"
   ],

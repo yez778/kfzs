@@ -118,6 +118,20 @@ Page({
     });
   },
 
+  // 申请售后：带到售后页（订单号/商品/金额）
+  goAftersale(e: any) {
+    const d = e.currentTarget.dataset;
+    wx.navigateTo({
+      url:
+        '/pages/aftersale/aftersale?order_id=' +
+        encodeURIComponent(d.id) +
+        '&product=' +
+        encodeURIComponent(d.product || '') +
+        '&amount=' +
+        (d.amount || 0),
+    });
+  },
+
   goLogin() {
     wx.switchTab({ url: '/pages/mine/mine' });
   },

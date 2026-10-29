@@ -55,6 +55,8 @@ declare namespace wx {
     confirmText?: string;
     confirmColor?: string;
     success?: (res: { confirm: boolean; cancel: boolean }) => void;
+    fail?: (err: any) => void;
+    complete?: () => void;
   }): void;
   function showActionSheet(options: {
     itemList: string[];

@@ -57,6 +57,10 @@
                 data-id="{{item.order_id}}" bindtap="cancel">取消订单</button>
           <button wx:if="{{item.status==='shipped'}}" class="btn btn-primary btn-mini"
                 data-id="{{item.order_id}}" bindtap="receive">确认收货</button>
+          <button wx:if="{{item.status==='paid' || item.status==='shipped' || item.status==='completed'}}"
+                  class="btn btn-ghost btn-mini refund-btn"
+                  data-id="{{item.order_id}}" data-product="{{item.product}}" data-amount="{{item.amount}}"
+                  bindtap="goAftersale">售后</button>
         </view>
       </view>
     </view>
