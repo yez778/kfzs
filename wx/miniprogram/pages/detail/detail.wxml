@@ -1,0 +1,87 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="empty">
+    <text class="empty-icon">⏳</text>
+    <text>加载中…</text>
+  </view>
+
+  <block wx:elif="{{product}}">
+    <!-- 轮播大图 -->
+    <swiper class="gallery" indicator-dots circular autoplay interval="4000"
+            indicator-active-color="#1e5eff">
+      <swiper-item wx:for="{{gallery}}" wx:key="*this">
+        <image class="gallery-img" src="{{item}}" mode="aspectFill"
+               bindtap="onPreview" data-src="{{item}}" />
+      </swiper-item>
+    </swiper>
+
+    <!-- 基本信息 -->
+    <view class="card info">
+      <view class="price-row">
+        <text class="price main-price">¥{{product.price}}</text>
+        <text wx:if="{{product.original_price>product.price}}" class="price-old">¥{{product.original_price}}</text>
+        <text class="sales">已售 {{product.sales_count}}</text>
+      </view>
+      <view class="title">{{product.title}}</view>
+      <view class="subtitle">{{product.subtitle}}</view>
+      <view wx:if="{{product.tags && product.tags.length}}" class="tag-row">
+        <text wx:for="{{product.tags}}" wx:key="*this" class="tag">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 服务承诺 -->
+    <view class="card service" wx:if="{{services.length}}">
+      <text wx:for="{{services}}" wx:key="*this" class="service-item">✓ {{item}}</text>
+    </view>
+
+    <!-- 规格选择 -->
+    <view class="card sec">
+      <view class="sec-title">选择规格</view>
+      <view class="sku-row">
+        <view wx:for="{{product.skus}}" wx:key="sku_id"
+              class="sku-item {{skuIndex===index?'sku-active':''}}"
+              data-index="{{index}}" bindtap="onSkuTap">
+          {{item.spec}}
+        </view>
+      </view>
+      <view class="sku-stock">库存：{{product.skus[skuIndex].stock}}</view>
+    </view>
+
+    <!-- 数量 -->
+    <view class="card sec quantity-row">
+      <view class="sec-title">购买数量</view>
+      <view class="stepper">
+        <view class="step-btn" bindtap="minus">−</view>
+        <view class="step-num">{{quantity}}</view>
+        <view class="step-btn plus" bindtap="plus">＋</view>
+      </view>
+    </view>
+
+    <!-- 规格参数 -->
+    <view class="card sec" wx:if="{{specs.length}}">
+      <view class="sec-title">规格参数</view>
+      <view class="spec-row" wx:for="{{specs}}" wx:key="label">
+        <text class="spec-label">{{item.label}}</text>
+        <text class="spec-value">{{item.value}}</text>
+      </view>
+    </view>
+
+    <!-- 详情 -->
+    <view class="card sec" wx:if="{{product.description}}">
+      <view class="sec-title">商品详情</view>
+      <view class="desc">{{product.description}}</view>
+    </view>
+
+    <view class="bottom-space"></view>
+
+    <!-- 底部操作栏 -->
+    <view class="action-bar">
+      <view class="action-cart" bindtap="addCart">
+        <text class="action-cart-icon">🛒</text>
+        <text>加入购物车</text>
+      </view>
+      <button class="btn btn-primary action-buy" bindtap="buyNow" disabled="{{submitting}}">
+        {{submitting ? '下单中…' : '立即购买'}}
+      </button>
+    </view>
+  </block>
+</view>

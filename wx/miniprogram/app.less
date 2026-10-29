@@ -1,0 +1,123 @@
+/* 全局样式：通用卡片、价格色、按钮（app.less 会被编译为 app.wxss） */
+page {
+  background: #f5f6fa;
+  font-size: 28rpx;
+  color: #23273a;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 卡片 ===== */
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 6rpx 24rpx rgba(31, 45, 90, 0.06);
+  overflow: hidden;
+}
+
+/* ===== 价格 ===== */
+.price {
+  color: #e5484d;
+  font-weight: 600;
+}
+.price-old {
+  color: #9aa3b5;
+  text-decoration: line-through;
+  font-size: 24rpx;
+  margin-left: 10rpx;
+}
+
+/* ===== 按钮 ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  padding: 0 36rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+.btn::after {
+  border: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #1e5eff, #4f8bff);
+  color: #fff;
+}
+.btn-ghost {
+  background: #fff;
+  color: #1e5eff;
+  border: 2rpx solid #1e5eff;
+}
+.btn-danger {
+  background: #fff;
+  color: #e5484d;
+  border: 2rpx solid #e5484d;
+}
+.btn-disabled {
+  opacity: 0.55;
+}
+.btn-mini {
+  height: 56rpx;
+  line-height: 56rpx;
+  font-size: 24rpx;
+  padding: 0 26rpx;
+}
+
+/* ===== 状态标签 ===== */
+.status-tag {
+  font-size: 22rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 26rpx;
+}
+.status-unpaid { background: #fff7e8; color: #d97706; }
+.status-paid { background: #e8f2ff; color: #1e5eff; }
+.status-shipped { background: #e9f7ef; color: #07b96b; }
+.status-completed { background: #eef1f6; color: #6b7c88; }
+.status-refunded { background: #fdeef0; color: #e5484d; }
+.status-cancelled { background: #f1f2f6; color: #9aa3b5; }
+
+/* ===== 空态 ===== */
+.empty {
+  padding: 120rpx 0;
+  text-align: center;
+  color: #9aa3b5;
+}
+.empty-icon {
+  font-size: 96rpx;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+/* ===== 加载态 ===== */
+.loading-more {
+  text-align: center;
+  color: #9aa3b5;
+  font-size: 24rpx;
+  padding: 24rpx 0;
+}
+
+/* ===== 表单 ===== */
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 28rpx;
+  background: #fff;
+  border-bottom: 2rpx solid #f1f2f6;
+}
+.form-item .label {
+  width: 150rpx;
+  color: #555f72;
+  flex-shrink: 0;
+}
+.form-item input,
+.form-item textarea {
+  flex: 1;
+  font-size: 28rpx;
+}
+.form-item textarea {
+  height: 120rpx;
+  padding-top: 4rpx;
+}

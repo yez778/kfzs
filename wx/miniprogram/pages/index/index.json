@@ -1,0 +1,6 @@
+{
+  "usingComponents": {},
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 60,
+  "navigationBarTitleText": "星途商城"
+}

@@ -1,0 +1,58 @@
+<view class="page">
+  <!-- 购物车列表 -->
+  <view wx:if="{{items.length}}" class="cart-list">
+    <view class="cart-item card" wx:for="{{items}}" wx:key="product_id">
+      <image class="cart-img" src="{{item.cover}}" mode="aspectFill" />
+      <view class="cart-info">
+        <view class="cart-title">{{item.title}}</view>
+        <view class="cart-price-row">
+          <text class="price">¥{{item.price}}</text>
+          <view class="stepper">
+            <view class="step-btn" data-id="{{item.product_id}}" bindtap="minus">−</view>
+            <view class="step-num">{{item.quantity}}</view>
+            <view class="step-btn plus" data-id="{{item.product_id}}" bindtap="plus">＋</view>
+          </view>
+        </view>
+      </view>
+      <view class="cart-del" data-id="{{item.product_id}}" bindtap="removeItem">✕</view>
+    </view>
+  </view>
+
+  <!-- 空购物车 -->
+  <view wx:else class="empty">
+    <text class="empty-icon">🛒</text>
+    <text>购物车还是空的</text>
+    <button class="btn btn-ghost go-shopping" bindtap="goShopping">去逛逛</button>
+  </view>
+
+  <!-- 收货信息 -->
+  <view class="card contact" wx:if="{{items.length}}">
+    <view class="contact-title">收货信息</view>
+    <view class="form-item">
+      <text class="label">收货人</text>
+      <input placeholder="请输入收货人姓名" value="{{contact.name}}"
+             data-field="name" bindinput="onContactInput" />
+    </view>
+    <view class="form-item">
+      <text class="label">手机号</text>
+      <input type="number" maxlength="11" placeholder="请输入手机号" value="{{contact.phone}}"
+             data-field="phone" bindinput="onContactInput" />
+    </view>
+    <view class="form-item">
+      <text class="label">收货地址</text>
+      <input placeholder="省 / 市 / 区 / 详细地址" value="{{contact.address}}"
+             data-field="address" bindinput="onContactInput" />
+    </view>
+  </view>
+
+  <!-- 结算栏 -->
+  <view class="settle-bar" wx:if="{{items.length}}">
+    <view class="settle-total">
+      <text>合计：</text>
+      <text class="price settle-price">¥{{total}}</text>
+    </view>
+    <button class="btn btn-primary settle-btn" bindtap="checkout" disabled="{{submitting}}">
+      {{submitting ? '下单中…' : '去结算'}}
+    </button>
+  </view>
+</view>

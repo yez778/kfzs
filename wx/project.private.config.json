@@ -1,0 +1,14 @@
+{
+  "description": "本地个人配置（不提交 git）：编译选项、预览设置等",
+  "setting": {
+    "compileHotReLoad": true,
+    "urlCheck": false,
+    "coverView": true,
+    "lazyloadPlaceholderEnable": false,
+    "preloadBackgroundData": false,
+    "autoPrefetch": false,
+    "showShadowRootInWxmlPanel": true
+  },
+  "projectname": "xingtu-miniprogram",
+  "condition": {}
+}

@@ -1,0 +1,78 @@
+<view class="page">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-box">
+      <text class="search-icon">🔍</text>
+      <input class="search-input" placeholder="搜索庭院灯 / 壁灯 / 太阳能…"
+             value="{{keyword}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm"
+             confirm-type="search" />
+      <text wx:if="{{keyword}}" class="search-clear" bindtap="onClearSearch">✕</text>
+    </view>
+    <view class="cart-btn" bindtap="goCart">
+      <text class="cart-icon">🛒</text>
+      <text wx:if="{{cartCount>0}}" class="cart-badge">{{cartCount}}</text>
+    </view>
+  </view>
+
+  <!-- 分类筛选 -->
+  <scroll-view class="cat-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="cat-row">
+      <view class="cat-item {{activeCategory===''?'cat-active':''}}"
+            data-code="" bindtap="onCategoryTap">全部</view>
+      <view wx:for="{{categories}}" wx:key="code"
+            class="cat-item {{activeCategory===item.code?'cat-active':''}}"
+            data-code="{{item.code}}" bindtap="onCategoryTap">
+        {{item.name}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 瀑布流 -->
+  <view class="waterfall" wx:if="{{leftCol.length || rightCol.length}}">
+    <view class="wf-col">
+      <view wx:for="{{leftCol}}" wx:key="product_id" class="goods-card card"
+            data-id="{{item.product_id}}" bindtap="onProductTap">
+        <image class="goods-img" src="{{item.cover}}"
+               mode="widthFix" lazy-load />
+        <view class="goods-body">
+          <view class="goods-title">{{item.title}}</view>
+          <view class="goods-sub">{{item.subtitle}}</view>
+          <view class="goods-foot">
+            <view class="goods-price">
+              <text class="price">¥{{item.price}}</text>
+              <text wx:if="{{item.original_price>item.price}}" class="price-old">¥{{item.original_price}}</text>
+            </view>
+            <view class="goods-add" catchtap="addCart" data-id="{{item.product_id}}">＋</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="wf-col">
+      <view wx:for="{{rightCol}}" wx:key="product_id" class="goods-card card"
+            data-id="{{item.product_id}}" bindtap="onProductTap">
+        <image class="goods-img" src="{{item.cover}}"
+               mode="widthFix" lazy-load />
+        <view class="goods-body">
+          <view class="goods-title">{{item.title}}</view>
+          <view class="goods-sub">{{item.subtitle}}</view>
+          <view class="goods-foot">
+            <view class="goods-price">
+              <text class="price">¥{{item.price}}</text>
+              <text wx:if="{{item.original_price>item.price}}" class="price-old">¥{{item.original_price}}</text>
+            </view>
+            <view class="goods-add" catchtap="addCart" data-id="{{item.product_id}}">＋</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空态 -->
+  <view class="empty" wx:if="{{!loading && !leftCol.length && !rightCol.length}}">
+    <text class="empty-icon">🛋</text>
+    <text>暂无商品</text>
+  </view>
+
+  <view class="loading-more" wx:if="{{loading}}">加载中…</view>
+  <view class="loading-more" wx:elif="{{!hasMore && (leftCol.length || rightCol.length)}}">— 没有更多了 —</view>
+</view>

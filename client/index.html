@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星途户外照明 · 管理后台 (Vue)</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 登录页 -->
+    <div v-if="!token" class="login-wrap">
+      <form class="login-card" @submit.prevent="login">
+        <div class="login-brand">
+          <div class="login-logo">星</div>
+          <div>
+            <h1>星途户外照明</h1>
+            <p>商城管理后台 · Vue 3</p>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>后端地址</span>
+          <input v-model.trim="apiBase" placeholder="http://localhost:8000" />
+        </label>
+        <label class="field">
+          <span>账号</span>
+          <input v-model.trim="loginForm.username" placeholder="admin / staff" autocomplete="username" />
+        </label>
+        <label class="field">
+          <span>密码</span>
+          <input v-model="loginForm.password" type="password" placeholder="请输入密码"
+                 autocomplete="current-password" />
+        </label>
+
+        <div v-if="loginError" class="login-error">{{ loginError }}</div>
+        <button class="btn btn-primary btn-block" type="submit" :disabled="logging">
+          {{ logging ? '登录中…' : '登 录' }}
+        </button>
+        <div class="login-hint">演示账号：admin / Admin@123456（或 staff / Staff@123456），仅 staff/admin 可管理</div>
+      </form>
+    </div>
+
+    <!-- 主界面 -->
+    <div v-else class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-dot">星</span>
+          <div>
+            <div class="brand-name">星途照明</div>
+            <div class="brand-sub">管理后台</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <div class="nav-item" :class="{ 'is-active': activeTab === 'products' }" @click="switchTab('products')">📦 商品管理</div>
+          <div class="nav-item" :class="{ 'is-active': activeTab === 'orders' }" @click="switchTab('orders')">📋 订单管理</div>
+          <div class="nav-item" :class="{ 'is-active': activeTab === 'chat' }" @click="switchTab('chat')">🤖 客服会话</div>
+        </nav>
+        <div class="sidebar-foot">Vue 3 + FastAPI</div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-title">{{ activeTab === 'products' ? '商品信息管理' : (activeTab === 'orders' ? '订单管理' : 'AI 客服会话') }}</div>
+          <div class="topbar-right">
+            <input class="api-input" v-model.trim="apiBase" @change="saveSettings"
+                   title="后端 API 地址" />
+            <span class="user-chip" :title="'角色：' + role">
+              <b>{{ username }}</b><i>{{ role }}</i>
+            </span>
+            <button class="btn btn-ghost" @click="logout">退出</button>
+          </div>
+        </header>
+
+        <!-- ==================== 商品管理 ==================== -->
+        <template v-if="activeTab === 'products'">
+          <section class="toolbar">
+            <input v-model.trim="keyword" class="search" placeholder="搜索商品标题 / 编号 / 分类"
+                   @input="curPage=1" />
+            <select v-model="statusFilter" class="select" @change="curPage=1">
+              <option value="">全部状态</option>
+              <option value="on_sale">在售</option>
+              <option value="off_shelf">已下架</option>
+            </select>
+            <select v-model="categoryFilter" class="select" @change="curPage=1">
+              <option value="">全部分类</option>
+              <option v-for="c in categories" :key="c.code" :value="c.code">{{ c.name }}</option>
+            </select>
+            <button class="btn btn-ghost" @click="loadProducts">🔄 刷新</button>
+            <button class="btn btn-primary" @click="openCreate">＋ 新增商品</button>
+          </section>
+
+          <div class="stat-row">
+            <div class="stat"><b>{{ products.length }}</b><span>商品总数</span></div>
+            <div class="stat stat-on"><b>{{ countByStatus('on_sale') }}</b><span>在售中</span></div>
+            <div class="stat stat-off"><b>{{ countByStatus('off_shelf') }}</b><span>已下架</span></div>
+          </div>
+
+          <div class="card">
+            <div v-if="loading" class="state">商品加载中…</div>
+            <div v-else-if="!paged.length" class="state">没有符合条件的商品</div>
+            <table v-else class="table">
+              <thead>
+                <tr>
+                  <th style="width:64px">图片</th>
+                  <th style="width:96px">编号</th>
+                  <th>商品信息</th>
+                  <th style="width:96px">分类</th>
+                  <th style="width:110px">价格</th>
+                  <th style="width:80px">销量</th>
+                  <th style="width:90px">状态</th>
+                  <th style="width:230px">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="p in paged" :key="p.product_id">
+                  <td>
+                    <div class="thumb" :style="{ background: !coverUrl(p) ? '#eef1f6' : '' }">
+                      <img v-if="coverUrl(p)" :src="coverUrl(p)" referrerpolicy="no-referrer"
+                           @error="onImgError" />
+                    </div>
+                  </td>
+                  <td class="mono">{{ p.product_id }}</td>
+                  <td>
+                    <div class="p-title">{{ p.title }}</div>
+                    <div class="p-sub">{{ p.subtitle || '—' }}</div>
+                    <div v-if="(p.tags||[]).length" class="tag-row">
+                      <span v-for="t in p.tags" :key="t" class="tag">{{ t }}</span>
+                    </div>
+                  </td>
+                  <td>{{ p.category || '—' }}</td>
+                  <td>
+                    <div class="price">¥{{ fmt(p.price) }}</div>
+                    <div v-if="p.original_price && p.original_price > p.price" class="price-old">
+                      ¥{{ fmt(p.original_price) }}
+                    </div>
+                  </td>
+                  <td>{{ p.sales_count || 0 }}</td>
+                  <td>
+                    <span :class="['badge', p.status === 'on_sale' ? 'badge-on' : 'badge-off']">
+                      {{ p.status === 'on_sale' ? '在售' : '已下架' }}
+                    </span>
+                  </td>
+                  <td class="ops">
+                    <button class="link" @click="openEdit(p)">编辑</button>
+                    <button class="link" :class="p.status==='on_sale'?'link-warn':'link-ok'"
+                            @click="toggleStatus(p)">
+                      {{ p.status === 'on_sale' ? '下架' : '上架' }}
+                    </button>
+                    <button class="link link-danger" @click="askDelete(p)">删除</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="filtered.length > pageSize" class="pager">
+              <button class="btn btn-ghost" :disabled="curPage===1" @click="curPage--">上一页</button>
+              <span>{{ curPage }} / {{ totalPages }}</span>
+              <button class="btn btn-ghost" :disabled="curPage===totalPages" @click="curPage++">下一页</button>
+            </div>
+          </div>
+        </template>
+
+        <!-- ==================== 订单管理 ==================== -->
+        <template v-else-if="activeTab === 'orders'">
+          <section class="toolbar">
+            <select v-model="orderStatusFilter" class="select" @change="curOrderPage=1">
+              <option value="">全部状态</option>
+              <option v-for="(name, code) in orderStatusMap" :key="code" :value="code">{{ name }}</option>
+            </select>
+            <input v-model.trim="orderKeyword" class="search" placeholder="搜索订单号 / 顾客 / 商品"
+                   @input="curOrderPage=1" />
+            <button class="btn btn-ghost" @click="loadOrders">🔄 刷新</button>
+          </section>
+
+          <div class="stat-row">
+            <div class="stat"><b>{{ orders.length }}</b><span>订单总数</span></div>
+            <div class="stat stat-on"><b>{{ countOrders('paid') }}</b><span>待发货</span></div>
+            <div class="stat stat-off"><b>{{ countOrders('shipped') }}</b><span>待收货</span></div>
+            <div class="stat stat-red"><b>{{ countOrders('unpaid') }}</b><span>待支付</span></div>
+          </div>
+
+          <div class="card">
+            <div v-if="ordersLoading" class="state">订单加载中…</div>
+            <div v-else-if="!pagedOrders.length" class="state">没有符合条件的订单</div>
+            <table v-else class="table">
+              <thead>
+                <tr>
+                  <th style="width:130px">订单号</th>
+                  <th style="width:90px">顾客</th>
+                  <th>商品</th>
+                  <th style="width:110px">金额</th>
+                  <th style="width:80px">状态</th>
+                  <th>物流 / 退款</th>
+                  <th style="width:150px">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="o in pagedOrders" :key="o.order_id">
+                  <td class="mono">{{ o.order_id }}</td>
+                  <td>{{ o.customer }}</td>
+                  <td><div class="p-title">{{ o.product }}</div></td>
+                  <td><div class="price">¥{{ fmt(o.amount) }}</div>
+                      <div class="p-sub">{{ o.pay_method === 'wxpay_sandbox' ? '微信支付(沙箱)' : '—' }}</div></td>
+                  <td><span :class="['badge', orderBadgeClass(o.status)]">{{ orderStatusMap[o.status] || o.status }}</span></td>
+                  <td>
+                    <div v-if="o.ship_company_name" class="p-sub">🚚 {{ o.ship_company_name }} {{ o.logistics_code }}</div>
+                    <div v-else-if="o.refund_no" class="p-sub refund-text">↩️ 退款 {{ o.refund_no }}</div>
+                    <div v-else class="p-sub">—</div>
+                  </td>
+                  <td class="ops">
+                    <button v-if="o.status==='paid'" class="link" @click="openShip(o)">发货</button>
+                    <button v-if="o.status==='paid'||o.status==='shipped'" class="link link-danger" @click="openRefund(o)">退款</button>
+                    <button v-else class="link" style="color:#c3c8d4" disabled>—</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="filteredOrders.length > orderPageSize" class="pager">
+              <button class="btn btn-ghost" :disabled="curOrderPage===1" @click="curOrderPage--">上一页</button>
+              <span>{{ curOrderPage }} / {{ orderTotalPages }}</span>
+              <button class="btn btn-ghost" :disabled="curOrderPage===orderTotalPages" @click="curOrderPage++">下一页</button>
+            </div>
+          </div>
+        </template>
+
+        <!-- ==================== 客服会话 ==================== -->
+        <template v-else>
+          <div class="card chat-card">
+            <div class="chat-intro">
+              <div class="chat-intro-icon">🤖</div>
+              <div>
+                <div class="chat-intro-title">AI 智能客服（agent 服务）</div>
+                <div class="chat-intro-desc">
+                  独立 AI 客服服务位于 <b>agent/</b> 目录（端口 8100），知识库 RAG + LLM 生成；
+                  server 配置 <b>AGENT_SERVICE_URL=http://127.0.0.1:8100</b> 后，小程序「AI客服」tab 的问答自动由 agent 服务接管。
+                </div>
+                <div class="chat-steps">
+                  <span>① cd agent && python -m uvicorn app:app --port 8100</span>
+                  <span>② server/.env 加 AGENT_SERVICE_URL</span>
+                  <span>③ 微信开发者工具 → AI客服 tab 提问</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </main>
+    </div>
+
+    <!-- 商品新增/编辑弹窗 -->
+    <div v-if="dialog.show" class="modal-mask" @click.self="closeDialog">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>{{ dialog.mode === 'create' ? '新增商品' : '编辑商品 · ' + dialog.form.product_id }}</h3>
+          <button class="modal-x" @click="closeDialog">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <label class="field span-2">
+              <span>商品标题 <i>*</i></span>
+              <input v-model.trim="dialog.form.title" placeholder="如：太阳能柱头灯户外防水…" />
+            </label>
+            <label class="field">
+              <span>副标题</span>
+              <input v-model.trim="dialog.form.subtitle" placeholder="星途户外照明" />
+            </label>
+            <label class="field">
+              <span>分类</span>
+              <select v-model="dialog.form.category_code" @change="onCategoryChange">
+                <option v-for="c in categories" :key="c.code" :value="c.code">{{ c.name }}</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>售价（元）<i>*</i></span>
+              <input v-model.number="dialog.form.price" type="number" min="0" step="0.01" />
+            </label>
+            <label class="field">
+              <span>划线价（元）</span>
+              <input v-model.number="dialog.form.original_price" type="number" min="0" step="0.01" />
+            </label>
+            <label class="field">
+              <span>销量</span>
+              <input v-model.number="dialog.form.sales_count" type="number" min="0" step="1" />
+            </label>
+            <label class="field">
+              <span>上架状态</span>
+              <select v-model="dialog.form.status">
+                <option value="on_sale">立即上架</option>
+                <option value="off_shelf">存为下架</option>
+              </select>
+            </label>
+            <label class="field span-2">
+              <span>封面图 URL</span>
+              <input v-model.trim="dialog.form.cover" placeholder="https://… 或上传后自动填充 /uploads/…" />
+            </label>
+            <div class="field span-2 cover-row">
+              <div class="cover-preview" :class="{empty:!dialogCoverUrl}">
+                <img v-if="dialogCoverUrl" :src="dialogCoverUrl" referrerpolicy="no-referrer" @error="onImgError" />
+                <span v-else>无封面</span>
+              </div>
+              <div class="cover-actions">
+                <label class="btn btn-ghost upload-btn">
+                  上传本地图片
+                  <input type="file" accept="image/*" hidden @change="uploadCover" />
+                </label>
+                <div class="upload-hint">JPG/PNG，≤5MB；上传成功自动填入封面地址</div>
+                <div v-if="uploading" class="upload-hint">上传中…</div>
+              </div>
+            </div>
+            <label class="field span-2">
+              <span>商品详情</span>
+              <textarea v-model="dialog.form.description" rows="4"
+                        placeholder="材质 / 防水等级 / 安装方式 / 售后说明等"></textarea>
+            </label>
+            <label class="field span-2">
+              <span>标签（逗号分隔）</span>
+              <input :value="(dialog.form.tags||[]).join('，')"
+                     @input="dialog.form.tags = $event.target.value.split(/[,，]/).map(s=>s.trim()).filter(Boolean)"
+                     placeholder="太阳能，防水，LED" />
+            </label>
+          </div>
+
+          <div class="sku-box">
+            <div class="sku-head">
+              <b>规格 / SKU 与库存</b>
+              <button v-if="dialog.mode==='create'" type="button" class="btn btn-ghost btn-sm" @click="addSku">＋ 添加规格</button>
+            </div>
+            <table class="table table-inner" v-if="dialog.form.skus.length">
+              <thead>
+                <tr><th>规格名</th><th style="width:120px">价格</th><th style="width:110px">库存</th><th style="width:110px">预警阈值</th><th v-if="dialog.mode==='create'" style="width:60px"></th></tr>
+              </thead>
+              <tbody>
+                <tr v-for="(s, i) in dialog.form.skus" :key="i">
+                  <td><input v-model.trim="s.spec" :disabled="dialog.mode==='edit'" placeholder="如：默认规格 / 暖光" /></td>
+                  <td><input v-model.number="s.price" type="number" min="0" step="0.01" :disabled="dialog.mode==='edit'" /></td>
+                  <td><input v-model.number="s.stock" type="number" min="0" step="1" :disabled="dialog.mode==='edit'" /></td>
+                  <td><input v-model.number="s.threshold" type="number" min="0" step="1" :disabled="dialog.mode==='edit'" /></td>
+                  <td v-if="dialog.mode==='create'">
+                    <button type="button" class="link link-danger" @click="dialog.form.skus.splice(i,1)">删</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else class="empty-line">暂无 SKU，保存时将按售价自动创建一个默认规格（库存 50）</div>
+            <div v-if="dialog.mode==='edit'" class="upload-hint">
+              编辑模式下 SKU/库存为只读（下单库存由库存模块管理）；新建商品时可设置初始规格与库存。
+            </div>
+          </div>
+
+          <div v-if="dialog.error" class="login-error">{{ dialog.error }}</div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" @click="closeDialog">取消</button>
+          <button class="btn btn-primary" :disabled="dialog.saving" @click="saveProduct">
+            {{ dialog.saving ? '保存中…' : (dialog.mode === 'create' ? '创建并上架' : '保存修改') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 发货弹窗 -->
+    <div v-if="shipDialog.show" class="modal-mask" @click.self="shipDialog.show=false">
+      <div class="modal modal-sm">
+        <div class="modal-head"><h3>商家发货</h3></div>
+        <div class="modal-body">
+          <div class="confirm-text">订单 <b>{{ shipDialog.order && shipDialog.order.order_id }}</b><br/>商品：{{ shipDialog.order && shipDialog.order.product }}</div>
+          <label class="field" style="margin-top:18px">
+            <span>物流公司</span>
+            <select v-model="shipDialog.companyCode">
+              <option v-for="c in shippingCompanies" :key="c.code" :value="c.code">{{ c.name }}（{{ c.code }}）</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>物流单号 <i>*</i></span>
+            <input v-model.trim="shipDialog.logisticsCode" placeholder="如：SF1234567890" />
+          </label>
+          <div v-if="shipDialog.error" class="login-error">{{ shipDialog.error }}</div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" @click="shipDialog.show=false">取消</button>
+          <button class="btn btn-primary" :disabled="shipDialog.busy" @click="doShip">
+            {{ shipDialog.busy ? '发货中…' : '确认发货' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 退款弹窗 -->
+    <div v-if="refundDialog.show" class="modal-mask" @click.self="refundDialog.show=false">
+      <div class="modal modal-sm">
+        <div class="modal-head"><h3>后台退款</h3></div>
+        <div class="modal-body">
+          <p class="confirm-text">确定对订单 <b>{{ refundDialog.order && refundDialog.order.order_id }}</b><br/>（¥{{ refundDialog.order ? fmt(refundDialog.order.amount) : 0 }}）发起退款吗？</p>
+          <p class="confirm-sub">退款将回补预占库存；沙箱模式直接退款成功，不真实扣款。</p>
+          <label class="field" style="margin-top:14px">
+            <span>退款原因</span>
+            <input v-model.trim="refundDialog.reason" placeholder="如：顾客申请 / 质量问题" />
+          </label>
+          <div v-if="refundDialog.error" class="login-error">{{ refundDialog.error }}</div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" @click="refundDialog.show=false">取消</button>
+          <button class="btn btn-danger" :disabled="refundDialog.busy" @click="doRefund">
+            {{ refundDialog.busy ? '退款中…' : '确认退款' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 删除确认 -->
+    <div v-if="confirm.show" class="modal-mask" @click.self="confirm.show=false">
+      <div class="modal modal-sm">
+        <div class="modal-head"><h3>删除商品</h3></div>
+        <div class="modal-body">
+          <p class="confirm-text">确定删除商品 <b>{{ confirm.target && confirm.target.title }}</b>（{{ confirm.target && confirm.target.product_id }}）吗？</p>
+          <p class="confirm-sub">删除后商品及其库存记录将一并移除，且不可恢复。</p>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" @click="confirm.show=false">取消</button>
+          <button class="btn btn-danger" :disabled="confirm.busy" @click="doDelete">
+            {{ confirm.busy ? '删除中…' : '确认删除' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <transition name="toast">
+      <div v-if="toastMsg" :class="['toast', 'toast-' + toastType]">{{ toastMsg }}</div>
+    </transition>
+  </div>
+
+  <script src="vendor/vue.global.prod.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

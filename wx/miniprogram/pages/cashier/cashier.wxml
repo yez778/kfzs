@@ -1,0 +1,76 @@
+<view class="cashier">
+  <!-- 顶部品牌区 -->
+  <view class="cashier-head">
+    <view class="wx-logo">微</view>
+    <text class="merchant">星途户外照明</text>
+  </view>
+
+  <!-- 收银台主界面 -->
+  <view class="cashier-body">
+    <!-- 金额 -->
+    <view class="amount-row">
+      <text class="amount-symbol">¥</text>
+      <text class="amount">{{amount}}</text>
+    </view>
+    <view class="amount-tip">微信支付 · 订单金额</view>
+
+    <!-- 订单信息 -->
+    <view class="order-info">
+      <view class="info-row">
+        <text class="info-label">订单号</text>
+        <text class="info-value">{{orderId}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">支付单号</text>
+        <text class="info-value">{{outTradeNo}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">支付方式</text>
+        <text class="info-value">微信支付（沙箱）</text>
+      </view>
+    </view>
+
+    <!-- 状态视图：success -->
+    <view wx:if="{{view==='success'}}" class="result-view">
+      <view class="result-icon ok">✓</view>
+      <view class="result-title">支付成功</view>
+      <view class="result-sub">订单已生成，商家将尽快发货</view>
+    </view>
+
+    <!-- 状态视图：paying -->
+    <view wx:elif="{{view==='paying'}}" class="result-view">
+      <view class="spinner"></view>
+      <view class="result-title">支付处理中…</view>
+      <view class="result-sub">请稍候，可点击查询确认结果</view>
+      <button class="btn btn-ghost btn-mini recheck-btn" bindtap="recheck">查询支付结果</button>
+    </view>
+
+    <!-- 状态视图：fail -->
+    <view wx:elif="{{view==='fail'}}" class="result-view">
+      <view class="result-icon fail">!</view>
+      <view class="result-title">支付失败</view>
+      <view class="result-sub">{{failReason || '支付未完成'}}</view>
+      <view class="fail-actions">
+        <button class="btn btn-ghost btn-mini" bindtap="retry">重新支付</button>
+        <button class="btn btn-ghost btn-mini" bindtap="later">稍后再付</button>
+      </view>
+    </view>
+
+    <!-- 收银台模拟区 -->
+    <view wx:else class="demo-zone">
+      <view class="demo-title">沙箱模拟收银台（演示，不真实扣款）</view>
+      <view class="demo-btns">
+        <button class="btn btn-primary demo-btn" bindtap="paySuccess" disabled="{{busy}}">✅ 模拟支付成功</button>
+        <button class="btn btn-ghost demo-btn" bindtap="payPaying" disabled="{{busy}}">⏳ 模拟支付中</button>
+        <button class="btn btn-danger demo-btn" bindtap="payFail" disabled="{{busy}}">⚠️ 模拟支付失败（余额不足）</button>
+      </view>
+      <view class="demo-tip">真实上线：切换后端 PAYMENT_MODE=wechat 后，本页自动改调 wx.requestPayment 拉起微信官方收银台</view>
+    </view>
+  </view>
+
+  <!-- 底部 -->
+  <view class="cashier-foot">
+    <button class="btn btn-ghost foot-btn" bindtap="later">稍后再付</button>
+    <button class="btn btn-ghost foot-btn" bindtap="goOrders">查看订单</button>
+  </view>
+</view>

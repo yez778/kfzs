@@ -10,12 +10,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY backend/requirements.txt .
+COPY server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend/vendor/chroma-onnx/all-MiniLM-L6-v2 /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
+COPY server/vendor/chroma-onnx/all-MiniLM-L6-v2 /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 
-COPY backend/app ./app
+COPY server/app ./app
 
 EXPOSE 8000
 

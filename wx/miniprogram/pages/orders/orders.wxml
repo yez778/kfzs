@@ -1,0 +1,64 @@
+<view class="page">
+  <view wx:if="{{loading && !orders.length}}" class="empty">
+    <text class="empty-icon">⏳</text>
+    <text>加载中…</text>
+  </view>
+
+  <view wx:elif="{{!orders.length}}" class="empty">
+    <text class="empty-icon">📦</text>
+    <text wx:if="{{!logged}}">请先登录查看订单</text>
+    <text wx:else>暂无订单</text>
+    <button wx:if="{{!logged}}" class="btn btn-ghost go-btn" bindtap="goLogin">去登录</button>
+  </view>
+
+  <view wx:else class="order-list">
+    <view class="order-card card" wx:for="{{orders}}" wx:key="order_id">
+      <!-- 头部：订单号 + 状态 -->
+      <view class="order-head">
+        <text class="order-id">订单 {{item.order_id}}</text>
+        <text class="status-tag {{statusClass[item.status] || 'status-unpaid'}}">
+          {{statusText[item.status] || item.status}}
+        </text>
+      </view>
+
+      <!-- 商品行 -->
+      <view class="order-goods">
+        <view class="goods-line" wx:for="{{item.items}}" wx:key="index" wx:for-item="g">
+          <view class="goods-name">{{g.title}}</view>
+          <view class="goods-meta">
+            <text>¥{{g.price}} × {{g.quantity}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 物流信息（已发货） -->
+      <view wx:if="{{item.status==='shipped' || item.status==='completed'}}" class="track-row">
+        <text class="track-icon">🚚</text>
+        <text class="track-text">
+          {{item.ship_company_name || item.ship_company || '物流公司'}}：{{item.logistics_code || '—'}}
+        </text>
+      </view>
+      <view wx:if="{{item.status==='refunded' && item.refund_no}}" class="track-row">
+        <text class="track-icon">↩️</text>
+        <text class="track-text">退款单号：{{item.refund_no}}</text>
+      </view>
+
+      <!-- 底部：金额 + 操作 -->
+      <view class="order-foot">
+        <view class="order-amount">
+          <text>实付：</text>
+          <text class="price">¥{{item.amount}}</text>
+          <text class="order-time">{{item.created_at}}</text>
+        </view>
+        <view class="order-actions">
+          <button wx:if="{{item.status==='unpaid'}}" class="btn btn-ghost btn-mini"
+                data-id="{{item.order_id}}" bindtap="pay">去支付</button>
+          <button wx:if="{{item.status==='unpaid'}}" class="btn btn-ghost btn-mini cancel"
+                data-id="{{item.order_id}}" bindtap="cancel">取消订单</button>
+          <button wx:if="{{item.status==='shipped'}}" class="btn btn-primary btn-mini"
+                data-id="{{item.order_id}}" bindtap="receive">确认收货</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,67 @@
+<view class="page">
+  <!-- 未登录 -->
+  <view wx:if="{{!logged}}" class="login-hero">
+    <view class="hero-avatar">👤</view>
+    <view class="hero-title">登录星途商城</view>
+    <view class="hero-sub">微信一键登录，同步订单与购物车</view>
+    <button class="btn btn-primary wx-login-btn" bindtap="wxLogin" disabled="{{logging}}">
+      {{logging ? '登录中…' : '微信一键登录'}}
+    </button>
+    <view class="hero-tip">开发者工具未配置 AppSecret：将使用本地标识（dev:*）登录</view>
+  </view>
+
+  <!-- 已登录 -->
+  <block wx:else>
+    <view class="user-card">
+      <view class="user-avatar">
+        <image wx:if="{{avatarUrl}}" src="{{avatarUrl}}" mode="aspectFill" />
+        <text wx:else>👤</text>
+      </view>
+      <view class="user-info">
+        <view class="user-name">{{user.username || '微信用户'}}</view>
+        <view class="user-role">
+          <text wx:if="{{user.role==='admin'}}">管理员</text>
+          <text wx:elif="{{user.role==='staff'}}">员工</text>
+          <text wx:else>普通会员</text>
+        </view>
+      </view>
+      <view class="wallet">
+        <view class="wallet-label">钱包余额（展示）</view>
+        <view class="wallet-value">¥{{user.wallet_balance || 0}}</view>
+      </view>
+    </view>
+
+    <!-- 快捷入口 -->
+    <view class="card menu">
+      <view class="menu-item" bindtap="goChat">
+        <text class="menu-icon">🤖</text>
+        <text class="menu-text">AI 智能客服</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="goOrders">
+        <text class="menu-icon">📦</text>
+        <text class="menu-text">我的订单</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="goCart">
+        <text class="menu-icon">🛒</text>
+        <text class="menu-text">购物车</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="goHome">
+        <text class="menu-icon">🏠</text>
+        <text class="menu-text">回到首页</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" bindtap="copyBackend">
+        <text class="menu-icon">🔗</text>
+        <text class="menu-text">后端地址：{{user ? '已复制' : ''}}</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+
+    <button class="btn btn-danger logout-btn" bindtap="logout">退出登录</button>
+  </block>
+
+  <view class="foot-tip">星途户外照明 · 答辩演示小程序（TypeScript 模板）</view>
+</view>

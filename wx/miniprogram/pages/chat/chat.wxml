@@ -1,0 +1,59 @@
+<view class="chat-page">
+  <!-- 顶栏操作 -->
+  <view class="chat-top">
+    <view class="chat-brand">
+      <image class="chat-logo" src="/assets/xingtu-logo.jpg" mode="aspectFill" />
+      <text>星途 AI 智能客服</text>
+    </view>
+    <view class="new-btn" bindtap="newSession">＋ 新会话</view>
+  </view>
+
+  <!-- 消息区 -->
+  <scroll-view class="msg-scroll" scroll-y scroll-top="{{scrollTop}}" scroll-with-animation>
+    <view class="msg-list">
+      <view wx:for="{{messages}}" wx:key="index" class="msg-row {{item.role==='user'?'msg-user':'msg-ai'}}">
+        <!-- 头像 -->
+        <image wx:if="{{item.role==='assistant'}}" class="msg-avatar" src="/assets/xingtu-logo.jpg" mode="aspectFill" />
+        <!-- 气泡 -->
+        <view class="msg-bubble">
+          <text class="msg-text" user-select>{{item.content}}</text>
+          <!-- 商品卡片 -->
+          <view wx:if="{{item.cards && item.cards.length}}" class="card-row">
+            <view wx:for="{{item.cards}}" wx:for-item="c" wx:key="title"
+                  class="msg-card" data-id="{{c.product_id}}" bindtap="onCardTap">
+              <view class="msg-card-title">{{c.title}}</view>
+              <view class="msg-card-price">¥{{c.price}}</view>
+            </view>
+          </view>
+          <!-- 知识库引用 -->
+          <view wx:if="{{item.citations && item.citations.length}}" class="cite-row">
+            <text class="cite-tag">📚 参考</text>
+            <text wx:for="{{item.citations}}" wx:key="*this" class="cite-item">{{item}}</text>
+          </view>
+          <!-- 转人工提示 -->
+          <view wx:if="{{item.needsHuman}}" class="human-hint">
+            已为你转接人工客服，请耐心等待回复～
+          </view>
+        </view>
+      </view>
+
+      <!-- 发送中 -->
+      <view wx:if="{{sending}}" class="msg-row msg-ai">
+        <image class="msg-avatar" src="/assets/xingtu-logo.jpg" mode="aspectFill" />
+        <view class="msg-bubble typing">
+          <text class="dot"></text><text class="dot"></text><text class="dot"></text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 输入区 -->
+  <view class="input-bar">
+    <input class="chat-input" value="{{input}}" bindinput="onInput"
+           confirm-type="send" bindconfirm="onSend"
+           placeholder="问问商品、订单或售后…" />
+    <view class="send-btn {{sending?'send-disabled':''}}" bindtap="onSend">
+      {{sending ? '…' : '发送'}}
+    </view>
+  </view>
+</view>

@@ -1,0 +1,12 @@
+{
+  "name": "xingtu-miniprogram",
+  "version": "1.0.0",
+  "description": "星途户外照明小程序（TypeScript 基础模板）",
+  "scripts": {
+    "compile": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^3.12.0",
+    "typescript": "^5.4.5"
+  }
+}

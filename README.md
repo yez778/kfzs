@@ -1,59 +1,86 @@
-# 星途客服小程序（顾客端 + 后端）
+# 星途户外照明 · 微信小程序商城系统
 
-小程序和 FastAPI 后端都在本目录。以后只启动这里的后端，不再使用桌面上的「自动化电商客服助手」。
+微信小程序商城 + FastAPI 后端 + Vue3 管理后台 + AI 智能客服，四端一体。
 
-## 启动后端
+## 目录结构（四个主目录）
 
-在本文件夹双击 `启动后端.bat`，或在终端执行：
+```
+wx/       微信小程序端（TypeScript 基础模板，微信开发者工具导入）
+server/   FastAPI 商城后端（商品 / 订单 / 支付沙箱 / 履约 / 客服接口）
+client/   Vue3 管理后台（商品管理、订单管理：发货 / 退款）
+agent/    独立 AI 智能客服服务（知识库 RAG + LLM，端口 8100）
+```
+
+```
+wx（微信小程序）──▶ server（商城后端 /chat）──转发（可选）──▶ agent（AI 客服）
+client（Vue 管理后台）──────┘
+```
+
+## 技术栈
+
+| 端 | 技术 |
+|---|---|
+| wx | 微信原生小程序 + TypeScript（wx.login 微信官方登录，沙箱微信支付） |
+| server | Python 3.12 + FastAPI + SQLAlchemy（SQLite 本机 / MySQL 8 生产） |
+| client | Vue 3（Composition API，零构建，本地化运行时离线可用） |
+| agent | FastAPI 独立服务 + 知识库检索（BM25）+ DeepSeek（默认 mock 本地演示） |
+
+## 快速启动
 
 ```bash
-cd backend
-conda run -n langchain python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+# 1. 商城后端（端口 8000）
+cd server && python -m uvicorn app.main:app --port 8000
+
+# 2. AI 客服（端口 8100，可选；配 AGENT_SERVICE_URL 后小程序客服由 agent 接管）
+cd agent && python -m uvicorn app:app --port 8100
+
+# 3. Vue 管理后台（端口 3000）
+cd client && python -m http.server 3000
+# 浏览器打开 http://localhost:3000，账号 admin / Admin@123456（staff / Staff@123456）
+
+# 4. 小程序：微信开发者工具导入 wx/ 目录（TS 编译已启用；本地调试勾选"不校验合法域名"）
 ```
 
-服务地址：`http://127.0.0.1:8000`  
-健康检查：`http://127.0.0.1:8000/api/v1/healthz`
+Windows 一键脚本：`启动后端.bat`、`启动客服.bat`、`client/启动管理后台.bat`。
 
-需要本机已安装 conda 环境 `langchain`（已装过原项目依赖即可）。
+## 功能清单
 
-## 打开小程序
+- **微信小程序（wx）**：首页瀑布流 / 搜索分类、商品详情、购物车结算（收货信息）、
+  微信支付沙箱收银台（成功 / 支付中 / 失败三分支）、订单列表（去支付 / 取消 / 确认收货 / 物流）、
+  AI 客服聊天、我的（微信登录 / 钱包）。
+- **商城后端（server）**：商品橱窗与搜索、微信登录（code / local_key 兜底）、JWT 鉴权、
+  下单原子预占库存、沙箱支付状态机（unpaid→paid→shipped→completed / refunded / cancelled）、
+  管理端接口（商品 CRUD、订单列表、发货、退款）、聊天会话 / 转人工 / 记忆 / RAG。
+- **管理后台（client）**：商品管理（增删改查、上下架、封面上传、SKU）、
+  订单管理（状态筛选、发货填物流、退款回补库存）、客服配置说明页。
+- **AI 客服（agent）**：意图识别（商品 / 订单 / 物流 / 售后 / 支付 / 问候）、
+  知识库关键词检索 + LLM 生成、引用来源、会话保持；`LLM_PROVIDER=mock` 本地可跑，
+  配 `LLM_API_KEY` 即切换 DeepSeek。
 
-1. 先启动上面的后端。
-2. 打开 [微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)。
-3. 导入本文件夹：`C:\Users\wang2\Desktop\星途客服小程序`
-4. 右上角详情 → 本地设置：勾选 **不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书**。
+## 支付（模拟）
 
-## 登录
+- `PAYMENT_MODE=sandbox`（默认）：本地沙箱收银台，不触达微信、不真实扣款；
+  支持 `SUCCESS / USERPAYING / PAYERROR` 三分支演示与失败重试。
+- `PAYMENT_MODE=v2sandbox`：微信官方 V2 仿真测试系统（真实请求 sandboxnew 接口，仅后端联调）。
+- 接真实商户后切 `wechat`：收银台自动改调 `wx.requestPayment` 拉起微信官方收银台。
 
-- 普通用户：微信一键登录（开发者工具里也会记住同一模拟用户）
-- 测试账号：`customer` / `Customer@123`（与普通用户同一套顾客界面）
-- 管理员：`admin` / `Admin@123456`（独立四栏：用户会话 / 橱窗 / 订单查询 / 我的）
+## 数据库（MySQL 8）
 
-## 功能
+- 建表与测试数据：`server/sql/schema.sql`（16 张表，utf8mb4）+ `server/sql/seed_data.sql`
+- 由 SQLAlchemy 模型自动生成（`server/sql/generate_sql.py`），结构见 `server/app/models.py`
+- server 配置 `MYSQL_ADDRESS / MYSQL_USERNAME / MYSQL_PASSWORD / MYSQL_DATABASE` 后自动切 MySQL；
+  本机未配置时用 SQLite（`server/doudian.db`）
 
-- 客服对话（含清空对话、商品卡片）
-- 灯具橱窗与商品详情
-- 购物车钱包下单：初始余额 2000 元，下单扣款并生成订单（不发货）
-- 个人中心：头像 / 用户名可改、钱包、订单查询
-- 管理员：微信式用户列表，仅用户转人工后可接入聊天；订单页按「名字 + 订单号」查询；橱窗可添加、编辑、下架、删除商品
-- 订单号格式为下单时间，例如 `2024.12.3.8.23.12`
+## 测试
 
-接口走微信云托管 `callContainer`，**不要**把 `*.sh.run.tcloudbase.com` 配进小程序合法域名（那是测试域名，正式环境会被拒绝）。
-
-小程序默认用 `callContainer` 连接云托管服务 `prod`。客服对话优先走 WebSocket 流式（`connectContainer` / `ws://`），连不上时回退 HTTP。`CLOUD_ENV` 是云开发环境（存储），`CLOUD_RUN_ENV` 是云托管环境 ID。本地调试后端时把 `USE_CLOUD` 改为 `false`。
-
-正式使用前：
-1. 云托管控制台确认服务名是 `prod`，并已发布最新版本。
-2. 微信公众平台 → 设置 → 基本设置 → **基础库最低版本 2.23.0** 以上。
-3. 重新编译 / 上传小程序。无需再配置 request / downloadFile 合法域名。
-
-云上用户、聊天、购物车要持久保存时，给服务 `prod` 增加环境变量（密码只填控制台，不要写进 Git）：
-
-```
-MYSQL_ADDRESS=10.31.107.132:3306
-MYSQL_USERNAME=root
-MYSQL_PASSWORD=开通 MySQL 时设置的密码
-MYSQL_DATABASE=doudian
+```bash
+cd server && python -m pytest tests -q      # 支付 / 履约 / 钱包 / 推荐等（关键链路全绿）
+cd agent && python -m pytest tests -q       # 知识库检索 / 意图识别 / chat 接口
+cd wx && npx tsc -p tsconfig.json --noEmit  # 小程序 TypeScript 类型检查
 ```
 
-本机不配这几项，继续用 SQLite。改完环境变量后必须重新发布 `prod`。
+## 文档
+
+- `server/微信支付沙箱.md`、`server/微信支付官方V2仿真.md`：支付链路说明
+- `wx/weixin-analysis.md`：小程序端实现说明
+- `项目架构文档-星途客服小程序.md`、`项目答辩问题-星途客服小程序.md`：答辩资料
