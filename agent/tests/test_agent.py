@@ -67,3 +67,61 @@ def test_chat_empty_message():
     r = client.post("/api/v1/chat", json={"message": "  "})
     assert r.status_code == 200
     assert r.json()["intent"] == "empty"
+
+
+def test_sessions_persist_to_file(tmp_path, monkeypatch):
+    """会话历史落盘：重启后仍能读到"""
+    import importlib
+
+    monkeypatch.setenv("SESSION_STORE", str(tmp_path / "sessions.json"))
+    import sessions as session_store
+
+    importlib.reload(session_store)
+    session_store.append_turn("s-persist", "user", "你好")
+    session_store.append_turn("s-persist", "assistant", "您好")
+    # 清缓存模拟重启
+    session_store._cache = None
+    history = session_store.get_history("s-persist")
+    assert [m["role"] for m in history] == ["user", "assistant"]
+    assert (tmp_path / "sessions.json").exists()
+
+
+def test_extract_order_id():
+    from tools import extract_order_id
+
+    assert extract_order_id("我的订单 2026.10.29.16.9.48 到哪了") == "2026.10.29.16.9.48"
+    assert extract_order_id("没有订单号") == ""
+
+
+def test_tool_degrades_without_token(monkeypatch):
+    """未配置 SERVICE_TOKEN 时工具降级，不影响问答"""
+    monkeypatch.delenv("SERVICE_TOKEN", raising=False)
+    from tools import try_answer_with_tools
+
+    assert try_answer_with_tools("订单 2026.10.29.16.9.48 到哪了") == ""
+
+
+def test_describe_order_shipped():
+    from tools import describe_order
+
+    text = describe_order(
+        {
+            "order_id": "2026.10.3.14.0.3",
+            "product": "太阳能庭院灯",
+            "amount": 180.0,
+            "status": "shipped",
+            "ship_company_name": "顺丰速运",
+            "logistics_code": "SF123",
+            "shipped_at": "2026-10-05T09:30:00",
+        }
+    )
+    assert "待收货" in text
+    assert "顺丰速运 SF123" in text
+
+
+def test_extract_order_id_plain_number():
+    """种子订单号是纯数字（1001-1005）也要能识别"""
+    from tools import extract_order_id
+
+    assert extract_order_id("订单 1003 到哪了") == "1003"
+    assert extract_order_id("订单 2026.10.29.20.9.55 发货了吗") == "2026.10.29.20.9.55"

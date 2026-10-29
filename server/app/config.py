@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     secret_key: str = "please-change-me-to-a-long-random-string"
     jwt_expire_minutes: int = 480
     agent_service_url: str = ""
+    # 内部服务令牌：供 agent 等内部服务调用 /internal/* 接口
+    service_token: str = ""
     cors_origins_raw: str = Field(
         default="http://localhost:3000,http://localhost:5173",
         alias="CORS_ORIGINS",

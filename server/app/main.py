@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from .api import admin, aftersales, auth, chat, doudian_sim, evaluation, fulfillment, knowledge, memory_api, orders, payments, sessions, shop
+from .api import admin, aftersales, auth, chat, doudian_sim, evaluation, fulfillment, internal, knowledge, memory_api, orders, payments, sessions, shop
 from .api import human_chat, product_admin
 from .config import settings
 from .seed import init_db
@@ -76,6 +76,7 @@ app.include_router(memory_api.router, prefix="/api/v1")
 app.include_router(aftersales.router, prefix="/api/v1")
 app.include_router(payments.router, prefix="/api/v1")
 app.include_router(fulfillment.router, prefix="/api/v1")
+app.include_router(internal.router, prefix="/api/v1")
 
 _UPLOAD_ROOT = Path(__file__).resolve().parents[1] / "uploads"
 _UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
