@@ -54,14 +54,14 @@
         <nav class="nav">
           <div class="nav-item" :class="{ 'is-active': activeTab === 'products' }" @click="switchTab('products')">📦 商品管理</div>
           <div class="nav-item" :class="{ 'is-active': activeTab === 'orders' }" @click="switchTab('orders')">📋 订单管理</div>
-          <div class="nav-item" :class="{ 'is-active': activeTab === 'chat' }" @click="switchTab('chat')">🤖 客服会话</div>
+          <div class="nav-item" :class="{ 'is-active': activeTab === 'chat' }" @click="switchTab('chat')">💬 人工客服</div>
         </nav>
         <div class="sidebar-foot">Vue 3 + FastAPI</div>
       </aside>
 
       <main class="main">
         <header class="topbar">
-          <div class="topbar-title">{{ activeTab === 'products' ? '商品信息管理' : (activeTab === 'orders' ? '订单管理' : 'AI 客服会话') }}</div>
+          <div class="topbar-title">{{ activeTab === 'products' ? '商品信息管理' : (activeTab === 'orders' ? '订单管理' : '人工客服会话') }}</div>
           <div class="topbar-right">
             <input class="api-input" v-model.trim="apiBase" @change="saveSettings"
                    title="后端 API 地址" />
@@ -223,22 +223,86 @@
           </div>
         </template>
 
-        <!-- ==================== 客服会话 ==================== -->
+        <!-- ==================== 人工客服会话管理 ==================== -->
         <template v-else>
-          <div class="card chat-card">
-            <div class="chat-intro">
-              <div class="chat-intro-icon">🤖</div>
-              <div>
-                <div class="chat-intro-title">AI 智能客服（agent 服务）</div>
-                <div class="chat-intro-desc">
-                  独立 AI 客服服务位于 <b>agent/</b> 目录（端口 8100），知识库 RAG + LLM 生成；
-                  server 配置 <b>AGENT_SERVICE_URL=http://127.0.0.1:8100</b> 后，小程序「AI客服」tab 的问答自动由 agent 服务接管。
+          <section class="toolbar">
+            <select v-model="handoffFilter" class="select">
+              <option value="">全部转人工</option>
+              <option value="waiting">⏳ 等待接入</option>
+              <option value="active">👨‍💼 接入中</option>
+            </select>
+            <button class="btn btn-ghost" @click="loadHandoffs">🔄 刷新队列</button>
+            <button class="btn btn-primary" @click="createDemoHandoff" :disabled="demoBusy">
+              {{ demoBusy ? '生成中…' : '🧪 生成演示会话' }}
+            </button>
+            <span class="hint-text">顾客在小程序「AI客服」里说「转人工」即进入此队列</span>
+          </section>
+
+          <div class="chat-admin">
+            <!-- 左：转人工队列 -->
+            <div class="card hc-list">
+              <div class="hc-list-head">转人工队列 · {{ filteredHandoffs.length }}</div>
+              <div v-if="handoffsLoading" class="state" style="padding:26px">加载中…</div>
+              <div v-else-if="!filteredHandoffs.length" class="state" style="padding:30px 16px">
+                <div style="font-size:34px;margin-bottom:10px">🗂</div>
+                暂无转人工会话<br/>
+                <small style="color:#9aa3b5">小程序 AI客服 里输入「转人工」测试</small>
+              </div>
+              <div v-else class="hc-list-body">
+                <div v-for="h in filteredHandoffs" :key="h.id"
+                     :class="['hc-item', { active: currentHandoff && currentHandoff.id === h.id }]"
+                     @click="openHandoff(h)">
+                  <div class="hc-item-top">
+                    <b>{{ h.customer }}</b>
+                    <span :class="['badge', h.handoff_status === 'waiting' ? 'badge-warn' : 'badge-green']">
+                      {{ h.handoff_status === 'waiting' ? '等待接入' : '接入中' }}
+                    </span>
+                  </div>
+                  <div class="hc-item-title">{{ h.title }}</div>
+                  <div class="hc-item-last">
+                    <span v-if="h.last_role === 'user'" class="role-user">顾客</span>
+                    <span v-else-if="h.last_role === 'staff'" class="role-staff">我</span>
+                    {{ h.last_message || '（暂无消息）' }}
+                  </div>
                 </div>
-                <div class="chat-steps">
-                  <span>① cd agent && python -m uvicorn app:app --port 8100</span>
-                  <span>② server/.env 加 AGENT_SERVICE_URL</span>
-                  <span>③ 微信开发者工具 → AI客服 tab 提问</span>
+              </div>
+            </div>
+
+            <!-- 右：对话 + 回复 -->
+            <div class="card hc-chat">
+              <template v-if="currentHandoff">
+                <div class="hc-chat-head">
+                  <div>
+                    <b>{{ currentHandoff.customer }}</b>
+                    <span class="muted">· {{ currentHandoff.title }}</span>
+                  </div>
+                  <button class="btn btn-ghost btn-sm" :disabled="closeBusy" @click="closeHandoff">
+                    {{ closeBusy ? '处理中…' : '结束人工接入' }}
+                  </button>
                 </div>
+                <div class="hc-msgs">
+                  <div v-for="m in handoffMessages" :key="m.id" :class="['hc-msg', m.role]">
+                    <div class="hc-avatar">{{ m.role === 'user' ? '👤' : (m.role === 'staff' ? '🧑‍💼' : '🤖') }}</div>
+                    <div class="hc-bubble">
+                      <div class="hc-msg-role">{{ roleName(m.role) }}</div>
+                      <div class="hc-msg-body">{{ m.content }}</div>
+                      <div v-if="(m.citations||[]).length" class="hc-cite">📚 {{ (m.citations||[]).join('、') }}</div>
+                    </div>
+                  </div>
+                  <div v-if="!handoffMessages.length" class="state" style="padding:40px">该会话暂无消息</div>
+                </div>
+                <div class="hc-reply">
+                  <textarea v-model="replyText" rows="2"
+                            placeholder="输入回复内容（Enter 发送，Shift+Enter 换行）"
+                            @keydown.enter.exact.prevent="sendReply"></textarea>
+                  <button class="btn btn-primary" :disabled="replyBusy || !replyText.trim()" @click="sendReply">
+                    {{ replyBusy ? '发送中…' : '发送' }}
+                  </button>
+                </div>
+              </template>
+              <div v-else class="state" style="padding:70px 20px">
+                <div style="font-size:36px;margin-bottom:12px">💬</div>
+                从左侧选择会话查看对话并回复
               </div>
             </div>
           </div>

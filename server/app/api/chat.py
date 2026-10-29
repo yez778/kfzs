@@ -50,6 +50,37 @@ async def _chat_via_agent(
         )
     )
     await db.commit()
+
+    # 转人工判定（与内置链路一致）：已在人工队列时肯定词→提示等待；新问题→交回 AI
+    if session.handoff_status in ("waiting", "active"):
+        if is_handoff_affirmative(payload.message):
+            db.add(Message(session_id=session.id, role="assistant", content=HANDOFF_HOLD_REPLY))
+            await db.commit()
+            return ChatResponse(
+                session_id=session.id,
+                message_id=0,
+                response=HANDOFF_HOLD_REPLY,
+                needs_human=True,
+                route={"intent": "human_handoff", "action": "human_handoff", "slots": {}, "reason_code": "handoff_active"},
+            )
+        # 用户提了新问题：重置为 AI 接管
+        session.handoff_status = "none"
+        session.handled_by = None
+        await db.commit()
+
+    # 用户明确要求转人工：进入人工队列，不再转发给 agent
+    if is_handoff_affirmative(payload.message):
+        session.handoff_status = "waiting"
+        db.add(Message(session_id=session.id, role="assistant", content=HANDOFF_HOLD_REPLY))
+        await db.commit()
+        return ChatResponse(
+            session_id=session.id,
+            message_id=0,
+            response=HANDOFF_HOLD_REPLY,
+            needs_human=True,
+            route={"intent": "human_handoff", "action": "human_handoff", "slots": {}, "reason_code": "human_handoff_keyword"},
+        )
+
     url = settings.agent_service_url.strip().rstrip("/") + "/api/v1/chat"
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:

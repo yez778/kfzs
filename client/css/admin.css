@@ -375,3 +375,93 @@ input, select, textarea { font-family: inherit; font-size: 14px; }
   background:
     radial-gradient(400px 160px at 50% 0%, rgba(47, 107, 255, 0.05), transparent 60%);
 }
+
+/* ============ 人工客服会话管理 ============ */
+.hint-text { font-size: 12.5px; color: #8a93a6; }
+.chat-admin {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  padding: 0 24px 28px;
+  align-items: start;
+}
+.hc-list { display: flex; flex-direction: column; max-height: calc(100vh - 230px); }
+.hc-list-head {
+  padding: 14px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  background: #f8fafd;
+}
+.hc-list-body { overflow-y: auto; }
+.hc-item {
+  padding: 13px 16px;
+  border-bottom: 1px solid #f4f6fa;
+  cursor: pointer;
+  transition: background .15s;
+}
+.hc-item:hover { background: #f8fbff; }
+.hc-item.active { background: #eef3ff; border-left: 3px solid var(--primary); }
+.hc-item-top { display: flex; align-items: center; justify-content: space-between; }
+.hc-item-top b { font-size: 13.5px; }
+.hc-item-title {
+  font-size: 12.5px; color: #555f72; margin-top: 5px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hc-item-last {
+  font-size: 12px; color: #9aa3b5; margin-top: 5px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.role-user { color: #2f6bff; margin-right: 4px; }
+.role-staff { color: #07b96b; margin-right: 4px; }
+
+.hc-chat { display: flex; flex-direction: column; min-height: 520px; }
+.hc-chat-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--border); background: #f8fafd;
+}
+.hc-chat-head .muted { color: #9aa3b5; font-size: 12.5px; margin-left: 6px; }
+.hc-msgs {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  max-height: calc(100vh - 400px);
+  background: #fbfcff;
+}
+.hc-msg { display: flex; gap: 10px; margin-bottom: 16px; }
+.hc-msg.user { flex-direction: row-reverse; }
+.hc-avatar {
+  width: 34px; height: 34px; border-radius: 50%; background: #eef3ff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.hc-bubble {
+  max-width: 68%;
+  background: #fff;
+  border: 1px solid #eef1f6;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 10px rgba(31,45,90,.05);
+}
+.hc-msg.user .hc-bubble { background: linear-gradient(135deg,#2f6bff,#4f8bff); color: #fff; border: none; }
+.hc-msg.staff .hc-bubble { background: #e9f7ef; border-color: #d5f0e1; }
+.hc-msg-role { font-size: 11px; color: #9aa3b5; margin-bottom: 4px; }
+.hc-msg.user .hc-msg-role { color: rgba(255,255,255,.75); }
+.hc-msg-body { font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.hc-cite { margin-top: 6px; font-size: 11px; color: #2f6bff; }
+.hc-reply {
+  display: flex; gap: 10px; align-items: flex-end;
+  padding: 14px 18px; border-top: 1px solid var(--border); background: #fff;
+}
+.hc-reply textarea {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+}
+.hc-reply textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(47,107,255,.12); }

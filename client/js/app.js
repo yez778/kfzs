@@ -63,6 +63,17 @@ createApp({
     const shipDialog = reactive({ show: false, busy: false, error: '', order: null, companyCode: 'SF', logisticsCode: '' });
     const refundDialog = reactive({ show: false, busy: false, error: '', order: null, reason: '' });
 
+    /* ---------- 人工客服 ---------- */
+    const handoffs = ref([]);
+    const handoffsLoading = ref(false);
+    const handoffFilter = ref('');
+    const currentHandoff = ref(null);
+    const handoffMessages = ref([]);
+    const replyText = ref('');
+    const replyBusy = ref(false);
+    const closeBusy = ref(false);
+    const demoBusy = ref(false);
+
     function emptyForm() {
       return {
         product_id: '', title: '', subtitle: '', category_code: 'post', price: 0,
@@ -158,6 +169,109 @@ createApp({
       activeTab.value = tab;
       localStorage.setItem('admin_tab', tab);
       if (tab === 'orders' && !orders.value.length) loadOrders();
+      if (tab === 'chat') loadHandoffs();
+    }
+
+    /* ---------- 人工客服数据 ---------- */
+    const filteredHandoffs = computed(() => {
+      if (!handoffFilter.value) return handoffs.value;
+      return handoffs.value.filter((h) => h.handoff_status === handoffFilter.value);
+    });
+
+    async function loadHandoffs() {
+      handoffsLoading.value = true;
+      try {
+        handoffs.value = await api('/api/v1/admin/human-chat/sessions');
+        // 刷新当前选中会话的状态
+        if (currentHandoff.value) {
+          const still = handoffs.value.find((h) => h.id === currentHandoff.value.id);
+          if (still) currentHandoff.value = still;
+          else { currentHandoff.value = null; handoffMessages.value = []; }
+        }
+      } catch (e) {
+        showToast(e.message, 'err');
+      } finally {
+        handoffsLoading.value = false;
+      }
+    }
+
+    async function openHandoff(h) {
+      currentHandoff.value = h;
+      try {
+        handoffMessages.value = await api('/api/v1/admin/human-chat/' + encodeURIComponent(h.id) + '/messages');
+        scrollToBottom();
+      } catch (e) {
+        showToast(e.message, 'err');
+      }
+    }
+
+    function scrollToBottom() {
+      setTimeout(() => {
+        const box = document.querySelector('.hc-msgs');
+        if (box) box.scrollTop = box.scrollHeight;
+      }, 60);
+    }
+
+    async function sendReply() {
+      const text = replyText.value.trim();
+      if (!text || replyBusy.value || !currentHandoff.value) return;
+      replyBusy.value = true;
+      try {
+        await api('/api/v1/admin/human-chat/' + encodeURIComponent(currentHandoff.value.id) + '/reply', {
+          method: 'POST',
+          body: JSON.stringify({ content: text }),
+        });
+        replyText.value = '';
+        await openHandoff(currentHandoff.value);
+        await loadHandoffs();
+      } catch (e) {
+        showToast(e.message, 'err');
+      } finally {
+        replyBusy.value = false;
+      }
+    }
+
+    async function closeHandoff() {
+      if (!currentHandoff.value) return;
+      closeBusy.value = true;
+      try {
+        await api('/api/v1/admin/human-chat/' + encodeURIComponent(currentHandoff.value.id) + '/close', {
+          method: 'POST',
+        });
+        showToast('已结束人工接入，会话交回 AI');
+        currentHandoff.value = null;
+        handoffMessages.value = [];
+        await loadHandoffs();
+      } catch (e) {
+        showToast(e.message, 'err');
+      } finally {
+        closeBusy.value = false;
+      }
+    }
+
+    // 演示：用当前登录账号造一个转人工会话，方便答辩展示队列
+    async function createDemoHandoff() {
+      demoBusy.value = true;
+      try {
+        const session = await api('/api/v1/sessions', {
+          method: 'POST',
+          body: JSON.stringify({ title: '演示转人工-' + new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }),
+        });
+        await api('/api/v1/chat', {
+          method: 'POST',
+          body: JSON.stringify({ session_id: session.id, message: '我要转人工，退款还没到账' }),
+        });
+        showToast('已生成演示会话，请刷新队列');
+        await loadHandoffs();
+      } catch (e) {
+        showToast(e.message, 'err');
+      } finally {
+        demoBusy.value = false;
+      }
+    }
+
+    function roleName(role) {
+      return { user: '顾客', staff: '人工客服', assistant: 'AI 客服' }[role] || role;
     }
 
     /* ---------- 商品数据 ---------- */
@@ -182,7 +296,7 @@ createApp({
     }
 
     async function bootAfterLogin() {
-      await Promise.all([loadCategories(), loadProducts(), loadOrders(), loadShippingCompanies()]);
+      await Promise.all([loadCategories(), loadProducts(), loadOrders(), loadShippingCompanies(), loadHandoffs()]);
     }
 
     /* ---------- 订单数据 ---------- */
@@ -474,6 +588,10 @@ createApp({
       filteredOrders, pagedOrders, orderTotalPages, countOrders, orderStatusMap,
       orderBadgeClass, loadOrders, openShip, doShip, shipDialog,
       openRefund, doRefund, refundDialog, shippingCompanies,
+      // 人工客服
+      handoffs, handoffsLoading, handoffFilter, filteredHandoffs,
+      currentHandoff, handoffMessages, replyText, replyBusy, closeBusy, demoBusy,
+      loadHandoffs, openHandoff, sendReply, closeHandoff, createDemoHandoff, roleName,
       // misc
       fmt, toastMsg, toastType,
     };
