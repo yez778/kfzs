@@ -41,6 +41,8 @@ weixin/
 | detail 详情 | 轮播大图、SKU 规格单选、数量步进、加入购物车、立即购买（下单跳收银台） | `GET /shop/products/{id}`、`POST /shop/checkout` |
 | cart 购物车 | 本地购物车（storage）、数量增删、收货人/手机/地址表单、合计、去结算 | `POST /shop/checkout` |
 | cashier 收银台 | 微信绿收银台 UI；**模拟支付成功 / 支付中 / 失败（余额不足）**；失败可重试；真实模式自动走 `wx.requestPayment` | `POST /payments/sandbox/complete`、`GET /payments/by-order/{id}` |
+| chat AI客服 | 气泡对话（商品卡片/引用/转人工）、新会话、进入会话历史 | `POST /chat`、`GET/POST /sessions` |
+| history 会话历史 | 历史会话列表（标题/最后消息/条数/时间）、删除会话、点击回到对话并加载完整历史 | `GET /sessions`、`GET /sessions/{id}/messages`、`DELETE /sessions/{id}` |
 | orders 订单 | 六种状态标签、待支付→去支付/取消订单、已发货→物流+确认收货、退款单展示、下拉刷新 | `GET /auth/me/orders`、`POST /payments/by-order/{id}/close`、`POST /orders/{id}/receive` |
 | mine 我的 | 微信一键登录（`wx.login` + `getUserProfile`）、退出、钱包余额展示、快捷入口 | `POST /auth/wechat`、`GET /auth/me` |
 

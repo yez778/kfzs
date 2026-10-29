@@ -5,6 +5,7 @@
     "pages/cart/cart",
     "pages/cashier/cashier",
     "pages/chat/chat",
+    "pages/history/history",
     "pages/orders/orders",
     "pages/mine/mine"
   ],

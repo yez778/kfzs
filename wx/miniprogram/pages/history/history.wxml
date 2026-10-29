@@ -1,0 +1,45 @@
+<view class="page">
+  <!-- 顶栏 -->
+  <view class="h-top">
+    <view class="h-title">💬 客服会话历史</view>
+    <view class="h-actions">
+      <view class="h-btn" bindtap="newSession">＋ 新会话</view>
+      <view class="h-btn" bindtap="goChat">去聊天</view>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="empty">
+    <text class="empty-icon">⏳</text>
+    <text>加载中…</text>
+  </view>
+
+  <!-- 空态 -->
+  <view wx:elif="{{!items.length}}" class="empty">
+    <text class="empty-icon">🗂</text>
+    <text>还没有客服会话记录</text>
+    <button class="btn btn-ghost empty-btn" bindtap="newSession">发起新会话</button>
+  </view>
+
+  <!-- 会话列表 -->
+  <view wx:else class="list">
+    <view class="s-item card" wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="onItemTap">
+      <view class="s-icon">🤖</view>
+      <view class="s-body">
+        <view class="s-title-row">
+          <text class="s-title">{{item.title || '新会话'}}</text>
+          <text class="s-time">{{item.timeText}}</text>
+        </view>
+        <view class="s-last">{{item.last || '（暂无消息）'}}</view>
+        <view class="s-meta">
+          <text class="s-count">{{item.msgCount}} 条消息</text>
+          <text wx:if="{{item.handoff_status==='waiting'}}" class="s-handoff">⏳ 等待人工</text>
+          <text wx:elif="{{item.handoff_status==='active'}}" class="s-handoff active">👨‍💼 人工接入中</text>
+        </view>
+      </view>
+      <view class="s-del" data-id="{{item.id}}" catchtap="onDelete">✕</view>
+    </view>
+  </view>
+
+  <view class="foot-tip">会话保留在 server 数据库；删除后不可恢复</view>
+</view>

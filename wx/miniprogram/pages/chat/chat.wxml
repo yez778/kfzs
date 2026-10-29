@@ -5,8 +5,14 @@
       <image class="chat-logo" src="/assets/xingtu-logo.jpg" mode="aspectFill" />
       <text>星途 AI 智能客服</text>
     </view>
-    <view class="new-btn" bindtap="newSession">＋ 新会话</view>
+    <view class="chat-top-actions">
+      <view class="new-btn" bindtap="goHistory">🕘 历史</view>
+      <view class="new-btn" bindtap="newSession">＋ 新会话</view>
+    </view>
   </view>
+
+  <!-- 历史加载中 -->
+  <view wx:if="{{loading}}" class="loading-bar">加载会话历史中…</view>
 
   <!-- 消息区 -->
   <scroll-view class="msg-scroll" scroll-y scroll-top="{{scrollTop}}" scroll-with-animation>
