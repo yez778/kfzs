@@ -27,7 +27,7 @@ from ..schemas import (
     PrepayRequest,
     SandboxCompleteRequest,
 )
-from .deps import get_current_user
+from .deps import get_current_staff, get_current_user
 
 _V2_XML_OK = "<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>"
 _V2_XML_FAIL = (
@@ -77,7 +77,55 @@ def _status_out(payment: PaymentOrder, order: Order | None, include_params: bool
         pay_params=build_jsapi_pay_params(payment) if include_params else None,
         payer_result=payment.payer_result,
         fail_reason=payment.fail_reason,
+        pay_mode=(settings.payment_mode or "sandbox").strip().lower(),
     )
+
+
+@router.get("/config")
+async def payment_config(user: User = Depends(get_current_staff)) -> dict:
+    """支付配置诊断：供管理端/联调查看当前模式与缺失项（不泄露密钥明文）。"""
+    mode = (settings.payment_mode or "sandbox").strip().lower()
+    appid = settings.payment_appid or settings.wechat_appid
+    mch_id = (settings.payment_mch_id or "").strip()
+    api_v2_key = (settings.payment_api_v2_key or "").strip()
+    sandbox_openid = (settings.payment_sandbox_openid or "").strip()
+
+    issues: list[str] = []
+    if not appid:
+        issues.append("未配置 PAYMENT_APPID / WECHAT_APPID")
+    if mode in ("v2sandbox", "wechat"):
+        if not mch_id or mch_id == "1900000000":
+            issues.append("未配置真实商户号 PAYMENT_MCH_ID（v2sandbox 不能用占位号）")
+        if mode == "v2sandbox":
+            if not api_v2_key:
+                issues.append("未配置真实 APIv2 密钥 PAYMENT_API_V2_KEY（商户平台-API安全）")
+            if not sandbox_openid:
+                issues.append("未配置测试 openid PAYMENT_SANDBOX_OPENID（小程序用户 openid）")
+        if not (settings.payment_notify_url or "").strip():
+            issues.append("未配置 PAYMENT_NOTIFY_URL（可用内网穿透地址，仅影响异步通知）")
+
+    return {
+        "enabled": settings.payment_enabled,
+        "mode": mode,
+        "appid": appid,
+        "appid_configured": bool(appid),
+        "mch_id": mch_id,
+        "mch_id_is_placeholder": (not mch_id or mch_id == "1900000000"),
+        "api_v2_key_configured": bool(api_v2_key),
+        "notify_url": settings.payment_notify_url or "",
+        "sandbox_openid_configured": bool(sandbox_openid),
+        "order_expire_minutes": settings.payment_order_expire_minutes,
+        # 沙箱密钥是否已缓存（第一次统一下单时自动获取）
+        "sandbox_sign_key_cached": bool(payment_v2.sandbox_key_cache.get_cached()),
+        "gateway": {
+            "getsignkey": payment_v2.GETSIGNKEY_URL,
+            "unifiedorder": payment_v2.UNIFIEDORDER_URL,
+            "orderquery": payment_v2.ORDERQUERY_URL,
+            "closeorder": payment_v2.CLOSEORDER_URL,
+        },
+        "issues": issues,
+        "ready": settings.payment_enabled and not issues,
+    }
 
 
 @router.post("/prepay", response_model=PaymentStatusOut)

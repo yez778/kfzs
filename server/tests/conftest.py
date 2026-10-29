@@ -8,6 +8,8 @@ os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{_TMP_DIR}/test_doudian.db"  
 os.environ["ENV"] = "test"
 os.environ["LLM_PROVIDER"] = "mock"
 os.environ["DOUDIAN_PROVIDER"] = "mock"
+# 测试一律用本地沙箱，不触达微信网关（生产/开发 .env 可能设为 v2sandbox）
+os.environ["PAYMENT_MODE"] = "sandbox"
 os.environ["EMBEDDING_PROVIDER"] = "onnx"
 os.environ["CHROMA_PERSIST_DIR"] = os.path.join(_TMP_DIR, "chroma")
 os.environ["ANONYMIZED_TELEMETRY"] = "False"

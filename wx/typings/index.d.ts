@@ -104,6 +104,7 @@ interface ICheckoutResult {
   created_at: string;
   out_trade_no: string;
   pay_method: string;
+  pay_mode: string;
   pay_params: Record<string, any>;
   expires_at: string | null;
 }
@@ -122,6 +123,8 @@ interface IPaymentStatus {
   pay_params: Record<string, any> | null;
   payer_result: string | null;
   fail_reason: string | null;
+  /** 支付模式：sandbox / v2sandbox / wechat */
+  pay_mode: string;
 }
 
 /** 我的订单（/auth/me/orders 返回） */

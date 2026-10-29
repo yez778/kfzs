@@ -26,7 +26,11 @@
       </view>
       <view class="info-row">
         <text class="info-label">支付方式</text>
-        <text class="info-value">微信支付（沙箱）</text>
+        <text class="info-value">微信支付（{{payMode === 'sandbox' ? '本地沙箱' : (payMode === 'v2sandbox' ? '官方V2沙箱' : '微信支付')}}）</text>
+      </view>
+      <view class="info-row" wx:if="{{payMode !== 'sandbox' && prepayId}}">
+        <text class="info-label">prepay_id</text>
+        <text class="info-value mono">{{prepayId}}</text>
       </view>
     </view>
 
@@ -56,15 +60,30 @@
       </view>
     </view>
 
-    <!-- 收银台模拟区 -->
-    <view wx:else class="demo-zone">
-      <view class="demo-title">沙箱模拟收银台（演示，不真实扣款）</view>
+    <!-- 收银台模拟区（仅本地沙箱模式） -->
+    <view wx:elif="{{payMode === 'sandbox'}}" class="demo-zone">
+      <view class="demo-title">本地沙箱模拟收银台（演示，不真实扣款）</view>
       <view class="demo-btns">
         <button class="btn btn-primary demo-btn" bindtap="paySuccess" disabled="{{busy}}">✅ 模拟支付成功</button>
         <button class="btn btn-ghost demo-btn" bindtap="payPaying" disabled="{{busy}}">⏳ 模拟支付中</button>
         <button class="btn btn-danger demo-btn" bindtap="payFail" disabled="{{busy}}">⚠️ 模拟支付失败（余额不足）</button>
       </view>
-      <view class="demo-tip">真实上线：切换后端 PAYMENT_MODE=wechat 后，本页自动改调 wx.requestPayment 拉起微信官方收银台</view>
+      <view class="demo-tip">切换 PAYMENT_MODE=v2sandbox 后改走微信官方 V2 沙箱接口</view>
+    </view>
+
+    <!-- 官方 V2 沙箱 / 真实支付：调起微信收银台 -->
+    <view wx:else class="demo-zone">
+      <view class="demo-title">
+        {{payMode === 'v2sandbox' ? '微信官方 V2 沙箱（sandboxnew）' : '微信支付'}}
+      </view>
+      <view class="demo-btns">
+        <button class="btn direct-pay" bindtap="callWxPay" disabled="{{busy}}">💳 调起微信支付</button>
+        <button class="btn btn-ghost demo-btn" bindtap="verifyPaid">🔍 查询支付结果</button>
+      </view>
+      <view class="demo-tip">
+        支付结果以官方 orderquery 为准（不提供伪造成功）；若统一下单失败，请检查后端
+        PAYMENT_MCH_ID / PAYMENT_API_V2_KEY / PAYMENT_SANDBOX_OPENID 配置。
+      </view>
     </view>
   </view>
 

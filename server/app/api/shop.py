@@ -260,6 +260,7 @@ async def checkout(
         created_at=order.created_at,
         out_trade_no=out_trade_no,
         pay_method=PAY_METHOD,
+        pay_mode=(settings.payment_mode or "sandbox").strip().lower(),
         pay_params=pay_params,
         expires_at=expires_at,
     )

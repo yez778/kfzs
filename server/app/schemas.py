@@ -387,6 +387,8 @@ class CheckoutResponse(BaseModel):
     # 微信支付沙箱字段
     out_trade_no: str = ""
     pay_method: str = ""
+    # 支付模式：sandbox（本地模拟）/ v2sandbox（微信官方 V2 沙箱）/ wechat（真实）
+    pay_mode: str = ""
     pay_params: dict = {}
     expires_at: datetime | None = None
 
@@ -445,6 +447,7 @@ class PaymentStatusOut(BaseModel):
     pay_params: dict | None = None
     payer_result: str | None = None  # 最近一次收银台结果：SUCCESS/USERPAYING/PAYERROR
     fail_reason: str | None = None
+    pay_mode: str = ""  # sandbox / v2sandbox / wechat
 
 
 class NotifyRequest(BaseModel):

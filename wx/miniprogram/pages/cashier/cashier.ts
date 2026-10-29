@@ -1,7 +1,8 @@
+// 微信支付收银台：按后端返回的 pay_mode 渲染不同交互
+//   sandbox   本地自建沙箱 → 提供三分支模拟按钮（成功/支付中/失败）
+//   v2sandbox 微信官方 V2 沙箱 → 调起 wx.requestPayment（MD5 签名），结果以 orderquery 为准，不提供伪造成功
+//   wechat    真实微信支付（V3/RSA）
 export {};
-// 微信支付（沙箱）收银台：模拟微信原生收银台三分支（成功 / 支付中 / 失败可重试）
-// 说明：开发者工具无真实商户，wx.requestPayment 会失败，故用本页模拟；
-// 接入真实微信商户后（后端 PAYMENT_MODE=wechat，pay_params 含 timeStamp 等），自动走 wx.requestPayment。
 const app = getApp<IAppOption>();
 
 Page({
@@ -11,8 +12,11 @@ Page({
     amount: 0,
     status: 'unpaid',
     tradeState: 'NOTPAY',
+    payMode: 'sandbox',
+    prepayId: '',
+    signType: 'MD5',
     payParams: null as Record<string, any> | null,
-    // view: 'cashier' 收银台主界面 / 'paying' 支付中 / 'success' 支付成功 / 'fail' 支付失败
+    // view: 'cashier' 主界面 / 'paying' 支付中 / 'success' 支付成功 / 'fail' 支付失败
     view: 'cashier',
     failReason: '',
     busy: false,
@@ -26,7 +30,7 @@ Page({
     if (orderId) this.queryStatus();
   },
 
-  // 查询支付单状态
+  // 查询支付单状态（顺带同步支付模式）
   async queryStatus() {
     try {
       const st = await app.request<IPaymentStatus>(
@@ -38,6 +42,7 @@ Page({
         amount: st.amount || this.data.amount,
         outTradeNo: st.out_trade_no || this.data.outTradeNo,
         payParams: st.pay_params || null,
+        payMode: st.pay_mode || 'sandbox',
         failReason: st.fail_reason || '',
       });
       return st;
@@ -47,12 +52,95 @@ Page({
     }
   },
 
-  // 模拟支付成功
+  /* ---------------- 官方 V2 沙箱 / 真实支付：调起微信收银台 ---------------- */
+
+  async callWxPay() {
+    // V2 沙箱需要真实 prepay_id：没有则先请求 prepay 拿参数
+    let params = this.data.payParams;
+    if (!params || !params.timeStamp) {
+      try {
+        const st = await app.request<IPaymentStatus>('/payments/prepay', {
+          method: 'POST',
+          data: { order_id: this.data.orderId, out_trade_no: this.data.outTradeNo },
+        });
+        params = st.pay_params || null;
+        if (params) {
+          this.setData({
+            payParams: params,
+            payMode: st.pay_mode || this.data.payMode,
+            prepayId: (params.package || '').replace('prepay_id=', ''),
+          });
+        }
+      } catch (e: any) {
+        wx.showToast({ title: e.message || '获取支付参数失败', icon: 'none' });
+        return;
+      }
+    }
+    if (!params || !params.timeStamp) {
+      wx.showToast({ title: '支付参数缺失，请检查后端 V2 沙箱配置', icon: 'none' });
+      return;
+    }
+    wx.showLoading({ title: '调起微信支付', mask: true });
+    wx.requestPayment({
+      timeStamp: String(params.timeStamp),
+      nonceStr: String(params.nonceStr),
+      package: String(params.package),
+      signType: String(params.signType || 'MD5'),
+      paySign: String(params.paySign),
+      success: () => {
+        wx.hideLoading();
+        // 支付结果以官方 orderquery 为准，前端主动查一次兜底
+        this.verifyPaid();
+      },
+      fail: (err: any) => {
+        wx.hideLoading();
+        const msg = err && err.errMsg ? err.errMsg : '';
+        if (msg.indexOf('cancel') >= 0) {
+          this.setData({ view: 'cashier' });
+          wx.showToast({ title: '已取消支付', icon: 'none' });
+          return;
+        }
+        this.setData({
+          view: 'fail',
+          failReason: '调起微信支付失败：' + (msg || '请稍后重试'),
+        });
+      },
+    });
+  },
+
+  // 主动查询支付结果（V2 沙箱：以 orderquery 返回为准同步订单状态）
+  async verifyPaid() {
+    wx.showLoading({ title: '查询支付结果', mask: true });
+    try {
+      await app.request<IPaymentStatus>('/payments/prepay', {
+        method: 'POST',
+        data: { order_id: this.data.orderId, out_trade_no: this.data.outTradeNo },
+      });
+      const st = await this.queryStatus();
+      wx.hideLoading();
+      if (st && st.status === 'paid') {
+        this.setData({ view: 'success' });
+        wx.showToast({ title: '支付成功', icon: 'success' });
+        setTimeout(() => wx.redirectTo({ url: '/pages/orders/orders' }), 1500);
+        return;
+      }
+      this.setData({
+        view: 'paying',
+        failReason: st && st.trade_state ? '当前状态：' + st.trade_state : '',
+      });
+      wx.showToast({ title: '暂未查询到支付成功', icon: 'none' });
+    } catch (e: any) {
+      wx.hideLoading();
+      wx.showToast({ title: e.message || '查询失败', icon: 'none' });
+    }
+  },
+
+  /* ---------------- 本地沙箱：三分支模拟 ---------------- */
+
   async paySuccess() {
     await this.submitResult('SUCCESS');
   },
 
-  // 模拟支付中（后端订单保持 unpaid，支付单回显 USERPAYING）
   async payPaying() {
     if (this.data.busy) return;
     this.setData({ busy: true, view: 'paying' });
@@ -68,7 +156,6 @@ Page({
     }
   },
 
-  // 模拟支付失败（余额不足）
   async payFail() {
     if (this.data.busy) return;
     this.setData({ busy: true });
@@ -102,7 +189,6 @@ Page({
         wx.showToast({ title: '支付成功', icon: 'success' });
         setTimeout(() => wx.redirectTo({ url: '/pages/orders/orders' }), 1500);
       } else {
-        // 后端返回了其他状态（如 USERPAYING / PAYERROR）
         this.setData({ view: st.trade_state === 'USERPAYING' ? 'paying' : 'fail' });
       }
     } catch (e: any) {
@@ -111,11 +197,9 @@ Page({
     }
   },
 
-  // 支付中状态轮询查询
+  // 支付中状态轮询查询（通用）
   async recheck() {
-    wx.showLoading({ title: '查询中' });
     const st = await this.queryStatus();
-    wx.hideLoading();
     if (st && st.status === 'paid') {
       this.setData({ view: 'success' });
       setTimeout(() => wx.redirectTo({ url: '/pages/orders/orders' }), 1200);
@@ -124,33 +208,12 @@ Page({
     }
   },
 
-  // 支付失败后重新支付：回到收银台主界面（订单仍 unpaid，不重复预占库存）
   retry() {
     this.setData({ view: 'cashier', failReason: '' });
   },
 
-  // 稍后再付：回订单列表（订单保持 unpaid，可在订单页继续支付）
   later() {
     wx.redirectTo({ url: '/pages/orders/orders' });
-  },
-
-  // 真实微信支付模式：用后端返回的 JSAPI 参数拉起微信收银台
-  realPay() {
-    const p = this.data.payParams;
-    if (!p || !p.timeStamp) return;
-    wx.requestPayment({
-      timeStamp: String(p.timeStamp),
-      nonceStr: String(p.nonceStr),
-      package: String(p.package),
-      signType: String(p.signType || 'RSA'),
-      paySign: String(p.paySign),
-      success: () => {
-        this.recheck();
-      },
-      fail: () => {
-        wx.showToast({ title: '已取消支付', icon: 'none' });
-      },
-    });
   },
 
   goOrders() {

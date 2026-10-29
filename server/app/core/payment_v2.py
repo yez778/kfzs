@@ -219,6 +219,21 @@ def resolve_jsapi_openid(payment_openid: str) -> str:
     return openid
 
 
+def missing_v2_config() -> list[str]:
+    """检查官方 V2 沙箱所需配置，返回缺失项（供下单前一次性提示）"""
+    issues: list[str] = []
+    if not _effective_appid():
+        issues.append("PAYMENT_APPID 或 WECHAT_APPID")
+    mch_id = (settings.payment_mch_id or "").strip()
+    if not mch_id or mch_id == "1900000000":
+        issues.append("PAYMENT_MCH_ID（真实商户号）")
+    if not (settings.payment_api_v2_key or "").strip():
+        issues.append("PAYMENT_API_V2_KEY（商户平台 APIv2 密钥）")
+    if not (settings.payment_sandbox_openid or "").strip():
+        issues.append("PAYMENT_SANDBOX_OPENID（真实小程序用户 openid）")
+    return issues
+
+
 async def unified_order_jsapi(
     *,
     out_trade_no: str,
@@ -228,6 +243,12 @@ async def unified_order_jsapi(
     client_ip: str = "127.0.0.1",
 ) -> dict:
     # 统一下单：返回 {"prepay_id": ..., "jsapi_params": {...wx.requestPayment...}}
+    missing = missing_v2_config()
+    if missing:
+        raise V2PaymentError(
+            "微信官方 V2 沙箱配置不完整，缺少：" + "、".join(missing) + "（详见 GET /api/v1/payments/config）",
+            code=400,
+        )
     appid = _effective_appid()
     params = {
         "appid": appid,
