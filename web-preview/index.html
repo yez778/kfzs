@@ -124,6 +124,12 @@ body {
 .detail-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
 .detail-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(0,0,0,.25); }
 .detail-dots i.on { width: 14px; background: var(--brand); }
+.detail-thumbs { display: flex; gap: 8px; padding: 0 14px; margin-top: 10px; }
+.detail-thumbs img {
+  width: 58px; height: 58px; border-radius: 10px; object-fit: cover;
+  border: 2px solid transparent; cursor: pointer; background: #eef3ff;
+}
+.detail-thumbs img.on { border-color: var(--brand); }
 .detail-info { padding: 16px; }
 .detail-price { font-size: 26px; font-weight: 800; background: linear-gradient(90deg,#e5484d,#f0716f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .service-bar { margin: 10px 14px; padding: 10px 14px; display: flex; gap: 14px; font-size: 11px; color: var(--ok); background: linear-gradient(135deg,#f2fbf5,#e9f7ef); border-radius: 14px; }
@@ -262,9 +268,12 @@ body {
     <p>💡 这是 <b>wx 微信小程序</b> 的视觉预览：真实商品图（已下载到 <code>web-preview/images/</code>）、Banner 装饰图、tabBar 底栏。</p>
     <p>🌐 <b>管理端 client</b>：<code>http://localhost:3000</code>（admin / Admin@123456）。</p>
     <p>📱 <b>真机</b>：微信开发者工具导入 <code>wx/</code> 编译。</p>
+    <p>🖼 图片资源共 <b>26 张</b>：13 张商品图（P10009~P10021）+ 8 张联网搜索场景图 + 3 Banner + Logo/头像。</p>
     <div class="img-list">
       <img src="images/P10009.jpg" /><img src="images/P10010.jpg" /><img src="images/P10011.jpg" />
       <img src="images/P10012.jpg" /><img src="images/P10013.jpg" /><img src="images/P10014.jpg" />
+      <img src="images/P10015.jpg" /><img src="images/P10017.jpg" /><img src="images/P10019.jpg" />
+      <img src="images/scene-garden-1.jpg" /><img src="images/scene-post-1.jpg" /><img src="images/scene-wall-1.jpg" />
     </div>
   </div>
 </div>
@@ -273,7 +282,16 @@ body {
 const IMG = {
   P10009: 'images/P10009.jpg', P10010: 'images/P10010.jpg', P10011: 'images/P10011.jpg',
   P10012: 'images/P10012.jpg', P10013: 'images/P10013.jpg', P10014: 'images/P10014.jpg',
+  P10015: 'images/P10015.jpg', P10016: 'images/P10016.jpg', P10017: 'images/P10017.jpg',
+  P10018: 'images/P10018.jpg', P10019: 'images/P10019.jpg', P10020: 'images/P10020.jpg',
+  P10021: 'images/P10021.jpg',
 };
+// 联网搜索补充的场景图（用于详情页图集轮播）
+const SCENES = [
+  'images/scene-garden-1.jpg', 'images/scene-garden-2.jpg', 'images/scene-garden-3.jpg',
+  'images/scene-post-1.jpg', 'images/scene-post-2.jpg',
+  'images/scene-wall-1.jpg', 'images/scene-wall-2.jpg', 'images/scene-wall-3.jpg',
+];
 const SAMPLE = [
   { id: 'P10009', title: '太阳能柱头灯户外防水现代简约LED庭院灯福字方形围墙灯后现代', subtitle: '星途户外照明', price: 350, original: 399, sales: 128 },
   { id: 'P10010', title: '太阳能柱头灯中式庭院灯户外防水别墅大门围墙灯不锈钢景观灯新中式', subtitle: '星途户外照明', price: 150, original: 0, sales: 86 },
@@ -281,6 +299,13 @@ const SAMPLE = [
   { id: 'P10012', title: '中式复古柱头灯户外防水LED庭院灯菱形格栅装饰灯新中式', subtitle: '星途户外照明', price: 125, original: 0, sales: 52 },
   { id: 'P10013', title: '太阳能柱头灯户外庭院别墅围墙立柱灯中式复古门柱灯新中式', subtitle: '星途户外照明', price: 88, original: 0, sales: 39 },
   { id: 'P10014', title: '中式太阳能柱头灯LED户外庭院灯山水装饰照明灯具新中式', subtitle: '星途户外照明', price: 135, original: 0, sales: 30 },
+  { id: 'P10015', title: '中式复古柱头灯别墅庭院围墙灯户外防水太阳能柱子灯新中式', subtitle: '星途户外照明', price: 120, original: 0, sales: 26 },
+  { id: 'P10016', title: '太阳能柱头灯户外防水别墅庭院灯中式围墙门柱氛围景观灯后现代', subtitle: '星途户外照明', price: 180, original: 220, sales: 21 },
+  { id: 'P10017', title: '现代简约LED壁灯户外防水IP65玻璃灯罩壁挂灯具3000K-4000K', subtitle: '星途户外照明', price: 100, original: 0, sales: 18 },
+  { id: 'P10018', title: '中式古典柱头灯方形福字装饰庭院围墙灯太阳能户外灯具', subtitle: '星途户外照明', price: 160, original: 199, sales: 15 },
+  { id: 'P10019', title: '中式LED壁挂式户外壁灯玻璃灯罩铝材防水庭院灯具2700K-3000K', subtitle: '星途户外照明', price: 105, original: 0, sales: 12 },
+  { id: 'P10020', title: '太阳能壁灯户外防水别墅庭院门口灯人体感应壁灯', subtitle: '星途户外照明', price: 145, original: 0, sales: 9 },
+  { id: 'P10021', title: '新中式太阳能柱头灯户外庭院灯别墅围墙灯景观灯', subtitle: '星途户外照明', price: 168, original: 208, sales: 7 },
 ];
 
 function fmt(n) { return Number(n).toFixed(2); }
@@ -323,9 +348,10 @@ function renderDetail(list) {
   const g = list[0];
   document.getElementById('detail').innerHTML = `
     <div class="detail-swiper">
-      <img class="main" src="${imgsrc(g.id)}" onerror="this.style.display='none';this.parentNode.innerHTML='🏮'" />
-      <div class="detail-dots"><i class="on"></i><i></i><i></i></div>
+      <img class="main" id="detailMain" src="${imgsrc(g.id)}" onerror="this.style.display='none'" />
+      <div class="detail-dots" id="detailDots"></div>
     </div>
+    <div class="detail-thumbs" id="detailThumbs"></div>
     <div class="detail-info card" style="margin:12px 14px">
       <div><span class="detail-price">¥${fmt(g.price)}</span>${g.original > g.price ? `<span class="price-old" style="font-size:13px">¥${fmt(g.original)}</span>` : ''}</div>
       <div style="font-size:15px;font-weight:600;margin-top:8px;line-height:1.5">${g.title}</div>
@@ -345,6 +371,31 @@ function renderDetail(list) {
       <div class="action-cart"><i>🛒</i>加入购物车</div>
       <div class="buy-btn">立即购买</div>
     </div>`;
+  setTimeout(() => bindDetailGallery(g.id), 0);
+}
+
+// 详情页图集：商品主图 + 联网搜索场景图
+function bindDetailGallery(productId) {
+  const main = document.getElementById('detailMain');
+  const thumbs = document.getElementById('detailThumbs');
+  const dots = document.getElementById('detailDots');
+  if (!main || !thumbs) return;
+  const startIdx = Math.abs(SCENES.length ? (productId.charCodeAt(5) % SCENES.length) : 0);
+  const gallery = [imgsrc(productId), ...SCENES.slice(startIdx, startIdx + 3)].filter(Boolean);
+  if (!gallery.length) return;
+  let cur = 0;
+  const paint = () => {
+    main.src = gallery[cur];
+    dots.innerHTML = gallery.map((_, i) => `<i class="${i === cur ? 'on' : ''}"></i>`).join('');
+    thumbs.querySelectorAll('img').forEach((el, i) => el.classList.toggle('on', i === cur));
+  };
+  thumbs.innerHTML = gallery
+    .map((src, i) => `<img src="${src}" data-i="${i}" onerror="this.style.visibility='hidden'" />`)
+    .join('');
+  thumbs.querySelectorAll('img').forEach((el) => {
+    el.addEventListener('click', () => { cur = Number(el.dataset.i); paint(); });
+  });
+  paint();
 }
 
 function renderChat(list) {
@@ -461,7 +512,7 @@ document.querySelectorAll('.tab-item').forEach((el) => {
 
 // 优先拉取真实商品接口，失败用内置样例
 (function boot() {
-  fetch('http://localhost:8000/api/v1/shop/products?size=6')
+  fetch('http://localhost:8000/api/v1/shop/products?size=20')
     .then((r) => r.json())
     .then((d) => {
       const list = (d.items || []).map((it) => ({
