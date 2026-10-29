@@ -202,6 +202,7 @@
   font-size: 30rpx;
 }
 .goods-price .price {
+  color: #e5484d;
   background: linear-gradient(90deg, #e5484d, #f0716f);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -210,7 +211,7 @@
 .goods-add {
   width: 52rpx;
   height: 52rpx;
-  background: var(--brand-grad);
+  background: var(--brand-grad, linear-gradient(135deg, #1e5eff 0%, #4f8bff 100%));
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -218,8 +219,4 @@
   justify-content: center;
   font-size: 30rpx;
   box-shadow: 0 6rpx 16rpx rgba(30, 94, 255, 0.3);
-  transition: transform 0.15s ease;
-}
-.goods-add:active {
-  transform: scale(0.9);
 }
