@@ -1,7 +1,7 @@
 <view class="page">
   <!-- 未登录 -->
   <view wx:if="{{!logged}}" class="login-hero">
-    <view class="hero-avatar">👤</view>
+    <view class="hero-avatar"><image src="/assets/logo.jpg" mode="aspectFill" /></view>
     <view class="hero-title">登录星途商城</view>
     <view class="hero-sub">微信一键登录，同步订单与购物车</view>
     <button class="btn btn-primary wx-login-btn" bindtap="wxLogin" disabled="{{logging}}">
@@ -15,7 +15,7 @@
     <view class="user-card">
       <view class="user-avatar">
         <image wx:if="{{avatarUrl}}" src="{{avatarUrl}}" mode="aspectFill" />
-        <text wx:else>👤</text>
+        <image wx:else src="/assets/avatar.png" mode="aspectFill" />
       </view>
       <view class="user-info">
         <view class="user-name">{{user.username || '微信用户'}}</view>

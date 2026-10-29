@@ -2,7 +2,7 @@
   <!-- 顶栏操作 -->
   <view class="chat-top">
     <view class="chat-brand">
-      <image class="chat-logo" src="/assets/xingtu-logo.jpg" mode="aspectFill" />
+      <image class="chat-logo" src="/assets/logo.jpg" mode="aspectFill" />
       <text>星途 AI 智能客服</text>
     </view>
     <view class="chat-top-actions">
@@ -19,7 +19,7 @@
     <view class="msg-list">
       <view wx:for="{{messages}}" wx:key="index" class="msg-row {{item.role==='user'?'msg-user':'msg-ai'}}">
         <!-- 头像 -->
-        <image wx:if="{{item.role==='assistant'}}" class="msg-avatar" src="/assets/xingtu-logo.jpg" mode="aspectFill" />
+        <image wx:if="{{item.role==='assistant'}}" class="msg-avatar" src="/assets/logo.jpg" mode="aspectFill" />
         <!-- 气泡 -->
         <view class="msg-bubble">
           <text class="msg-text" user-select>{{item.content}}</text>
@@ -45,7 +45,7 @@
 
       <!-- 发送中 -->
       <view wx:if="{{sending}}" class="msg-row msg-ai">
-        <image class="msg-avatar" src="/assets/xingtu-logo.jpg" mode="aspectFill" />
+        <image class="msg-avatar" src="/assets/logo.jpg" mode="aspectFill" />
         <view class="msg-bubble typing">
           <text class="dot"></text><text class="dot"></text><text class="dot"></text>
         </view>

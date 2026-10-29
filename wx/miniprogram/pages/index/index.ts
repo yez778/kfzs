@@ -15,6 +15,13 @@ Page({
     hasMore: true,
     loading: false,
     cartCount: 0,
+    // 首页 Banner（真实灯具图，图中已含文案）
+    bannerImages: [
+      '/assets/banner1.jpg',
+      '/assets/banner2.jpg',
+      '/assets/banner3.jpg',
+    ],
+    bannerIndex: 0,
   },
 
   onLoad() {
@@ -25,6 +32,20 @@ Page({
 
   onShow() {
     this.refreshCartCount();
+  },
+
+  onBannerChange(e: any) {
+    this.setData({ bannerIndex: Number(e.detail.current) || 0 });
+  },
+
+  // 点 Banner：「AI 客服」那张跳客服，其余跳分类筛选
+  onBannerTap() {
+    if (this.data.bannerIndex === 2) {
+      wx.switchTab({ url: '/pages/chat/chat' });
+      return;
+    }
+    this.setData({ activeCategory: this.data.bannerIndex === 1 ? 'post' : '' });
+    this.loadProducts(true);
   },
 
   onPullDownRefresh() {

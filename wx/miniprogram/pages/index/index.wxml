@@ -14,32 +14,12 @@
     </view>
   </view>
 
-  <!-- 轮播 Banner -->
-  <swiper class="banner" indicator-dots circular autoplay interval="4000"
-          indicator-color="rgba(255,255,255,.4)" indicator-active-color="#ffffff">
-    <swiper-item class="banner-item banner-1">
-      <view class="banner-inner">
-        <view class="banner-tag">星途好物 · 焕新夜</view>
-        <view class="banner-title">太阳能户外灯</view>
-        <view class="banner-sub">天黑自动亮 · IP65 防水 · 88 元起</view>
-        <view class="banner-emoji">🌙</view>
-      </view>
-    </swiper-item>
-    <swiper-item class="banner-item banner-2">
-      <view class="banner-inner">
-        <view class="banner-tag">新中式精选</view>
-        <view class="banner-title">柱头灯 · 庭院灯</view>
-        <view class="banner-sub">别墅门柱 · 中式古韵 · 全国包邮</view>
-        <view class="banner-emoji">🏮</view>
-      </view>
-    </swiper-item>
-    <swiper-item class="banner-item banner-3">
-      <view class="banner-inner">
-        <view class="banner-tag">AI 智能客服</view>
-        <view class="banner-title">有问题？问星途</view>
-        <view class="banner-sub">商品 / 订单 / 售后 7×24 解答</view>
-        <view class="banner-emoji">🤖</view>
-      </view>
+  <!-- 轮播 Banner（真实灯具图） -->
+  <swiper class="banner" indicator-dots circular autoplay interval="4000" duration="500"
+          indicator-color="rgba(255,255,255,.45)" indicator-active-color="#ffffff"
+          bindchange="onBannerChange">
+    <swiper-item wx:for="{{bannerImages}}" wx:key="*this">
+      <image class="banner-img" src="{{item}}" mode="aspectFill" bindtap="onBannerTap" />
     </swiper-item>
   </swiper>
 
