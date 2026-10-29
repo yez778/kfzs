@@ -18,129 +18,102 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #0e1a33;
+  background: radial-gradient(1200px 500px at 80% -10%, rgba(47,107,255,.25), transparent 60%),
+              radial-gradient(900px 420px at 0% 110%, rgba(106,168,255,.2), transparent 55%),
+              #0e1a33;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 16px 60px;
+  padding: 34px 16px 60px;
   color: var(--text);
 }
-.preview-head {
-  text-align: center;
-  margin-bottom: 26px;
-  color: #fff;
-}
-.preview-head h1 { font-size: 26px; font-weight: 700; letter-spacing: 2px; }
-.preview-head p { color: #8aa2d8; font-size: 14px; margin-top: 8px; }
-.page-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+.preview-head { text-align: center; margin-bottom: 26px; color: #fff; }
+.preview-head .logo-row { display: inline-flex; align-items: center; gap: 12px; }
+.preview-head .logo-img { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 8px 22px rgba(30,94,255,.5); }
+.preview-head h1 { font-size: 25px; font-weight: 700; letter-spacing: 2px; }
+.preview-head p { color: #8aa2d8; font-size: 13px; margin-top: 8px; }
+.page-tabs { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center; }
 .page-tab {
-  padding: 9px 22px;
-  border-radius: 24px;
-  background: rgba(255,255,255,.1);
-  color: #c7d5f5;
-  font-size: 14px;
-  cursor: pointer;
-  border: 1px solid transparent;
+  padding: 9px 22px; border-radius: 24px; background: rgba(255,255,255,.1);
+  color: #c7d5f5; font-size: 14px; cursor: pointer; border: 1px solid transparent;
   transition: all .2s;
 }
-.page-tab.active {
-  background: var(--grad);
-  color: #fff;
-  font-weight: 600;
-  box-shadow: 0 8px 22px rgba(30,94,255,.4);
-}
-.stage {
-  display: flex;
-  gap: 30px;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+.page-tab.active { background: var(--grad); color: #fff; font-weight: 600; box-shadow: 0 8px 22px rgba(30,94,255,.4); }
+.stage { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+
 /* 手机壳 */
 .phone {
-  width: 390px;
-  border-radius: 44px;
-  background: #1a2440;
-  padding: 12px;
+  width: 390px; border-radius: 44px; background: #1a2440; padding: 12px;
   box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 2px #2a3760;
 }
 .phone-screen {
-  width: 100%;
-  height: 700px;
-  border-radius: 34px;
-  overflow: hidden;
-  background: #f5f7fd;
-  position: relative;
+  width: 100%; height: 760px; border-radius: 34px; overflow: hidden;
+  background: #f5f7fd; position: relative;
 }
 .phone-notch {
-  position: absolute;
-  top: 10px; left: 50%; transform: translateX(-50%);
-  width: 130px; height: 26px;
-  background: #1a2440;
-  border-radius: 18px;
-  z-index: 50;
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 130px; height: 26px; background: #1a2440; border-radius: 18px; z-index: 60;
 }
 .screen {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  position: relative;
-  padding-bottom: 60px;
-  background: #f5f7fd;
+  height: 100%; overflow-y: auto; position: relative; background: #f5f7fd;
+  padding-bottom: 110px;
 }
 .screen::-webkit-scrollbar { display: none; }
 
-/* ===== 通用 ===== */
-.card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 6px 22px rgba(31,45,90,.08);
+/* tabBar */
+.tabbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 64px;
+  background: #fff; border-top: 1px solid #f1f2f6;
+  display: flex; align-items: center; padding-bottom: env(safe-area-inset-bottom);
+  z-index: 50;
 }
+.tab-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; font-size: 10px; color: #9aa3b5; cursor: pointer;
+}
+.tab-item .tab-icon {
+  width: 26px; height: 26px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.tab-item.on { color: var(--brand); font-weight: 600; }
+.tab-item.on .tab-icon { background: #eef3ff; }
+
+/* ===== 通用 ===== */
+.card { background: #fff; border-radius: 16px; box-shadow: 0 6px 22px rgba(31,45,90,.08); }
 .price { color: var(--danger); font-weight: 700; }
 .price-old { color: var(--muted); text-decoration: line-through; font-size: 12px; margin-left: 6px; }
 
 /* ===== 首页 ===== */
-.search-bar {
-  display: flex; align-items: center;
-  padding: 12px 14px;
-  background: var(--grad);
-  position: sticky; top: 0; z-index: 20;
-}
-.search-box {
-  flex: 1; display: flex; align-items: center;
-  background: #fff; border-radius: 22px; height: 36px; padding: 0 14px; font-size: 13px; color: var(--muted);
-}
+.search-bar { display: flex; align-items: center; padding: 14px 14px; background: var(--grad); position: sticky; top: 0; z-index: 40; }
+.search-box { flex: 1; display: flex; align-items: center; background: #fff; border-radius: 22px; height: 36px; padding: 0 14px; font-size: 13px; color: var(--muted); }
 .search-box span { margin-right: 8px; }
 .cart-btn { position: relative; margin-left: 12px; width: 38px; height: 38px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .badge-num { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; line-height: 17px; background: var(--danger); color: #fff; border-radius: 9px; font-size: 11px; text-align: center; padding: 0 4px; }
-.banner { height: 150px; margin: 12px 14px 0; border-radius: 16px; overflow: hidden; position: relative; }
-.banner-inner { height: 100%; padding: 22px 24px; position: relative; }
-.banner-1 { background: linear-gradient(135deg, #2f6bff, #5b8cff 55%, #8ab0ff); }
-.banner-2 { background: linear-gradient(135deg, #7a4bd0, #a56fe0 55%, #c79af0); }
-.banner-3 { background: linear-gradient(135deg, #07b96b, #22c98a 55%, #5ad9a8); }
-.banner-tag { display: inline-block; font-size: 10px; color: #fff; background: rgba(255,255,255,.22); border-radius: 10px; padding: 2px 9px; }
-.banner-title { color: #fff; font-size: 21px; font-weight: 700; margin-top: 10px; }
-.banner-sub { color: rgba(255,255,255,.85); font-size: 12px; margin-top: 5px; }
-.banner-emoji { position: absolute; right: 24px; bottom: 16px; font-size: 46px; }
-.banner-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
-.banner-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.4); }
+
+.banner { height: 160px; margin: 12px 14px 0; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 10px 26px rgba(31,45,90,.16); }
+.banner img.bg { width: 100%; height: 100%; object-fit: cover; }
+.banner-inner { position: absolute; inset: 0; padding: 22px 24px; }
+.banner-tag { display: inline-block; font-size: 10px; color: #fff; background: rgba(255,255,255,.28); border-radius: 10px; padding: 3px 10px; backdrop-filter: blur(2px); }
+.banner-title { color: #fff; font-size: 22px; font-weight: 800; margin-top: 12px; text-shadow: 0 2px 10px rgba(0,0,0,.18); }
+.banner-sub { color: rgba(255,255,255,.92); font-size: 12px; margin-top: 6px; text-shadow: 0 1px 6px rgba(0,0,0,.12); }
+.banner-emoji { position: absolute; right: 26px; bottom: 20px; font-size: 48px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.2)); }
+.banner-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+.banner-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.5); }
 .banner-dots i.on { width: 16px; background: #fff; }
+
 .cat-bar { display: flex; gap: 8px; padding: 12px 14px 4px; overflow-x: auto; }
 .cat-bar::-webkit-scrollbar { display: none; }
 .cat-item { padding: 7px 16px; border-radius: 18px; background: #f1f2f6; font-size: 13px; color: #555f72; white-space: nowrap; }
-.cat-item.on { background: var(--brand); color: #fff; font-weight: 500; }
+.cat-item.on { background: var(--brand); color: #fff; font-weight: 500; box-shadow: 0 4px 12px rgba(30,94,255,.3); }
+
 .waterfall { display: flex; padding: 14px 8px 0; }
 .wf-col { flex: 1; padding: 0 6px; }
-.goods { margin-bottom: 12px; background: #fff; border-radius: 16px; box-shadow: 0 6px 22px rgba(31,45,90,.08); overflow: hidden; }
-.goods-img { position: relative; height: 170px; display: flex; align-items: center; justify-content: center; font-size: 54px; }
-.goods-sale { position: absolute; top: 8px; left: 8px; font-size: 10px; color: #fff; background: linear-gradient(135deg,#e5484d,#f0716f); border-radius: 9px; padding: 2px 9px; }
+.goods { margin-bottom: 12px; background: #fff; border-radius: 16px; box-shadow: 0 6px 22px rgba(31,45,90,.08); overflow: hidden; transition: transform .15s; cursor: pointer; }
+.goods:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(31,45,90,.14); }
+.goods-img { position: relative; height: 170px; background: #eef3ff; }
+.goods-img img { width: 100%; height: 100%; object-fit: cover; }
+.goods-sale { position: absolute; top: 8px; left: 8px; font-size: 10px; color: #fff; background: linear-gradient(135deg,#e5484d,#f0716f); border-radius: 9px; padding: 2px 9px; box-shadow: 0 4px 10px rgba(229,72,77,.35); }
 .goods-body { padding: 10px 12px 12px; }
 .goods-title { font-size: 13px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 38px; }
 .goods-sub { font-size: 11px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -149,9 +122,13 @@ body {
 .goods-sale-num { font-size: 10px; color: var(--muted); }
 
 /* ===== 详情 ===== */
-.detail-img { height: 260px; display: flex; align-items: center; justify-content: center; font-size: 90px; background: linear-gradient(180deg,#eef3ff,#f8fafd); }
+.detail-swiper { height: 270px; position: relative; background: #eef3ff; }
+.detail-swiper img.main { width: 100%; height: 100%; object-fit: cover; }
+.detail-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+.detail-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(0,0,0,.25); }
+.detail-dots i.on { width: 14px; background: var(--brand); }
 .detail-info { padding: 16px; }
-.detail-price { font-size: 26px; font-weight: 700; background: linear-gradient(90deg,#e5484d,#f0716f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.detail-price { font-size: 26px; font-weight: 800; background: linear-gradient(90deg,#e5484d,#f0716f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .service-bar { margin: 10px 14px; padding: 10px 14px; display: flex; gap: 14px; font-size: 11px; color: var(--ok); background: linear-gradient(135deg,#f2fbf5,#e9f7ef); border-radius: 14px; }
 .sec { margin: 10px 14px; padding: 14px; }
 .sec-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
@@ -163,22 +140,24 @@ body {
 .step { width: 28px; height: 28px; line-height: 26px; text-align: center; border: 1.5px solid #e3e6ee; border-radius: 7px; font-size: 16px; color: #555f72; background: #fff; }
 .step.plus { color: var(--brand); border-color: var(--brand); background: #eef3ff; }
 .step-num { width: 40px; text-align: center; font-weight: 600; }
-.action-bar { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; padding: 10px 14px 14px; background: #fff; box-shadow: 0 -4px 16px rgba(31,45,90,.08); }
+.action-bar { position: absolute; left: 0; right: 0; bottom: 64px; display: flex; align-items: center; padding: 10px 14px; background: #fff; box-shadow: 0 -4px 16px rgba(31,45,90,.08); }
 .action-cart { width: 90px; text-align: center; font-size: 10px; color: #555f72; }
 .action-cart i { display: block; font-size: 20px; font-style: normal; }
 .buy-btn { flex: 1; height: 44px; line-height: 44px; text-align: center; color: #fff; background: var(--grad); border-radius: 22px; font-size: 15px; margin-left: 12px; box-shadow: 0 8px 18px rgba(30,94,255,.3); }
 
 /* ===== 我的 ===== */
-.mine-hero { background: var(--grad); padding: 26px 20px; border-radius: 0 0 28px 28px; position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; }
+.mine-hero { background: var(--grad); padding: 30px 20px; border-radius: 0 0 28px 28px; position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; }
 .mine-hero::after { content:''; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%; background: rgba(255,255,255,.1); }
-.mine-avatar { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.mine-avatar { width: 58px; height: 58px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,.6); background: #fff; flex-shrink: 0; }
+.mine-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .mine-name { color: #fff; font-size: 17px; font-weight: 600; }
-.mine-role { display: inline-block; margin-top: 5px; font-size: 10px; color: var(--brand); background: #fff; border-radius: 12px; padding: 2px 10px; font-weight: 600; }
+.mine-role { display: inline-block; margin-top: 5px; font-size: 10px; color: var(--brand); background: #fff; border-radius: 12px; padding: 2px 10px; font-weight: 600; box-shadow: 0 4px 10px rgba(20,40,90,.15); }
 .mine-wallet { margin-left: auto; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.25); border-radius: 12px; padding: 8px 14px; text-align: right; }
 .mine-wallet .l { font-size: 10px; color: rgba(255,255,255,.75); }
 .mine-wallet .v { color: #fff; font-size: 18px; font-weight: 700; }
 .mine-menu { margin: 14px; }
-.mine-item { display: flex; align-items: center; padding: 14px; border-bottom: 1px solid #f5f6fa; }
+.mine-item { display: flex; align-items: center; padding: 14px; border-bottom: 1px solid #f5f6fa; cursor: pointer; transition: background .15s; }
+.mine-item:hover { background: #f6f9ff; }
 .mine-item:last-child { border-bottom: none; }
 .mine-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; margin-right: 12px; }
 .mine-item:nth-child(1) .mine-icon { background: linear-gradient(135deg,#e9f7ef,#d5f3e2); }
@@ -187,28 +166,30 @@ body {
 .mine-item:nth-child(4) .mine-icon { background: linear-gradient(135deg,#f3f0ff,#e4ddff); }
 .mine-text { flex: 1; font-size: 14px; font-weight: 500; }
 .mine-arrow { color: #c3c8d4; font-size: 18px; }
-.mine-logout { margin: 14px; height: 44px; line-height: 44px; text-align: center; color: var(--danger); border: 1.5px solid var(--danger); border-radius: 22px; font-size: 14px; }
+.mine-logout { margin: 14px; height: 44px; line-height: 44px; text-align: center; color: var(--danger); border: 1.5px solid var(--danger); border-radius: 22px; font-size: 14px; cursor: pointer; }
 
 /* ===== 客服 ===== */
 .chat-top { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--grad); color: #fff; }
 .chat-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; }
-.chat-logo { width: 26px; height: 26px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.chat-logo { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.chat-logo img { width: 100%; height: 100%; object-fit: cover; }
 .chat-actions { display: flex; gap: 8px; }
 .chat-btn { font-size: 11px; color: #fff; border: 1px solid rgba(255,255,255,.6); border-radius: 14px; padding: 4px 12px; }
 .chat-list { padding: 14px; }
 .msg { display: flex; margin-bottom: 14px; }
 .msg.assistant { justify-content: flex-start; }
 .msg.user { justify-content: flex-end; }
-.msg-avatar { width: 34px; height: 34px; border-radius: 50%; background: #eef3ff; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-right: 8px; flex-shrink: 0; }
+.msg-avatar { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: #eef3ff; margin-right: 8px; flex-shrink: 0; }
+.msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .msg-bubble { max-width: 76%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; }
 .assistant .msg-bubble { background: #fff; box-shadow: 0 4px 14px rgba(31,45,90,.06); }
 .user .msg-bubble { background: var(--grad); color: #fff; }
 .card-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-.card-mini { width: 47%; background: #f0f4ff; border: 1px solid #dbe6ff; border-radius: 8px; padding: 8px 10px; }
+.card-mini { width: 47%; background: #f0f4ff; border: 1px solid #dbe6ff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }
 .card-mini .t { font-size: 11px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .card-mini .p { font-size: 12px; color: var(--danger); font-weight: 600; margin-top: 3px; }
 .cite { margin-top: 8px; border-top: 1px dashed #e3e6ee; padding-top: 6px; font-size: 10px; color: var(--brand); }
-.chat-input-bar { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; padding: 10px 14px 14px; background: #fff; border-top: 1px solid #f1f2f6; }
+.chat-input-bar { position: absolute; left: 0; right: 0; bottom: 64px; display: flex; align-items: center; padding: 10px 14px; background: #fff; border-top: 1px solid #f1f2f6; }
 .chat-input { flex: 1; height: 38px; background: #f5f6fa; border-radius: 19px; padding: 0 16px; font-size: 13px; color: var(--muted); display: flex; align-items: center; }
 .send-btn { width: 64px; height: 38px; line-height: 38px; text-align: center; margin-left: 10px; background: var(--grad); color: #fff; border-radius: 19px; font-size: 13px; }
 
@@ -221,9 +202,11 @@ body {
 .st-refunded { background: #fdeef0; color: var(--danger); }
 .st-completed { background: #f1f2f6; color: #6b7c88; }
 .order-goods { padding: 10px 14px; }
-.goods-line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f5f6fa; font-size: 12px; }
+.goods-line { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f5f6fa; font-size: 12px; }
 .goods-line:last-child { border-bottom: none; }
 .goods-line .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; }
+.goods-line .thumb { width: 46px; height: 46px; border-radius: 8px; overflow: hidden; margin-right: 10px; flex-shrink: 0; }
+.goods-line .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .track { padding: 8px 14px; font-size: 11px; color: var(--ok); background: #f0faf4; border-top: 1px solid #e3f3ea; border-bottom: 1px solid #e3f3ea; }
 .order-foot { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; }
 .order-actions { display: flex; gap: 8px; }
@@ -236,13 +219,18 @@ body {
 .tips { max-width: 320px; color: #9db4e0; font-size: 13px; line-height: 1.9; }
 .tips b { color: #fff; }
 .tips code { background: rgba(255,255,255,.12); padding: 1px 6px; border-radius: 5px; font-size: 12px; }
+.tips .img-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.tips .img-list img { width: 74px; height: 74px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,.15); }
 </style>
 </head>
 <body>
 
 <div class="preview-head">
-  <h1>星途商城 · 小程序视觉预览</h1>
-  <p>wx 端页面视觉复刻（纯 CSS，可本地打开）｜ 管理端请访问 http://localhost:3000</p>
+  <div class="logo-row">
+    <img class="logo-img" src="images/logo.jpg" alt="" />
+    <h1>星途商城 · 小程序视觉预览</h1>
+  </div>
+  <p>wx 端页面视觉预览（真实商品图 + 5 页面）｜ 管理端 http://localhost:3000</p>
 </div>
 
 <div class="page-tabs">
@@ -262,36 +250,52 @@ body {
       <div id="chat" class="screen" style="display:none"></div>
       <div id="orders" class="screen" style="display:none"></div>
       <div id="mine" class="screen" style="display:none"></div>
+      <!-- tabBar -->
+      <div class="tabbar" id="tabbar">
+        <div class="tab-item on" data-tab="home"><span class="tab-icon">🏠</span>首页</div>
+        <div class="tab-item" data-tab="detail"><span class="tab-icon">🛍</span>详情</div>
+        <div class="tab-item" data-tab="chat"><span class="tab-icon">🤖</span>客服</div>
+        <div class="tab-item" data-tab="orders"><span class="tab-icon">📦</span>订单</div>
+        <div class="tab-item" data-tab="mine"><span class="tab-icon">👤</span>我的</div>
+      </div>
     </div>
   </div>
 
   <div class="tips">
-    <p>💡 这是 <b>wx 微信小程序</b> 的视觉预览（纯 HTML/CSS 复刻，含最新样式增强：Banner 轮播、促销角标、渐变卡片、彩色菜单）。</p>
-    <p>🌐 <b>管理端 client</b>：本地启动 server 后浏览器打开 <code>http://localhost:3000</code>（admin / Admin@123456）。</p>
-    <p>📱 <b>真机演示</b>：微信开发者工具导入 <code>wx/</code> 目录编译。</p>
-    <p>📦 页面数据为内置样例；服务在线时可自动读取真实商品接口（详见下方控制台）。</p>
+    <p>💡 这是 <b>wx 微信小程序</b> 的视觉预览：真实商品图（已下载到 <code>web-preview/images/</code>）、Banner 装饰图、tabBar 底栏。</p>
+    <p>🌐 <b>管理端 client</b>：<code>http://localhost:3000</code>（admin / Admin@123456）。</p>
+    <p>📱 <b>真机</b>：微信开发者工具导入 <code>wx/</code> 编译。</p>
+    <div class="img-list">
+      <img src="images/P10009.jpg" /><img src="images/P10010.jpg" /><img src="images/P10011.jpg" />
+      <img src="images/P10012.jpg" /><img src="images/P10013.jpg" /><img src="images/P10014.jpg" />
+    </div>
   </div>
 </div>
 
 <script>
+const IMG = {
+  P10009: 'images/P10009.jpg', P10010: 'images/P10010.jpg', P10011: 'images/P10011.jpg',
+  P10012: 'images/P10012.jpg', P10013: 'images/P10013.jpg', P10014: 'images/P10014.jpg',
+};
 const SAMPLE = [
-  { title: '太阳能柱头灯户外防水现代简约LED庭院灯福字方形围墙灯后现代', subtitle: '星途户外照明', price: 350, original: 399, sales: 128, color: 'linear-gradient(135deg,#ffe29a,#ffc46b)', emoji: '🏮' },
-  { title: '中式复古柱头灯别墅庭院围墙灯户外防水太阳能柱子灯新中式', subtitle: '星途户外照明', price: 120, original: 0, sales: 86, color: 'linear-gradient(135deg,#c9b8ff,#a88cf0)', emoji: '🏛' },
-  { title: '太阳能庭院灯户外防水别墅围墙门柱氛围景观灯后现代', subtitle: '星途户外照明', price: 180, original: 220, sales: 64, color: 'linear-gradient(135deg,#a8e6c0,#68c99a)', emoji: '🌿' },
-  { title: '现代简约LED壁灯户外防水IP65玻璃灯罩壁挂灯具led灯', subtitle: '星途户外照明', price: 100, original: 0, sales: 52, color: 'linear-gradient(135deg,#b8d4ff,#7da8f0)', emoji: '💡' },
-  { title: '中式古典柱头灯方形福字装饰庭院围墙灯太阳能户外灯具', subtitle: '星途户外照明', price: 160, original: 199, sales: 41, color: 'linear-gradient(135deg,#ffd0a8,#f09a6b)', emoji: '🎐' },
-  { title: '太阳能柱头灯户外庭院别墅围墙立柱灯中式复古门柱灯新中式', subtitle: '星途户外照明', price: 88, original: 0, sales: 39, color: 'linear-gradient(135deg,#a8e6e0,#5fc9c0)', emoji: '🪔' },
+  { id: 'P10009', title: '太阳能柱头灯户外防水现代简约LED庭院灯福字方形围墙灯后现代', subtitle: '星途户外照明', price: 350, original: 399, sales: 128 },
+  { id: 'P10010', title: '太阳能柱头灯中式庭院灯户外防水别墅大门围墙灯不锈钢景观灯新中式', subtitle: '星途户外照明', price: 150, original: 0, sales: 86 },
+  { id: 'P10011', title: '太阳能柱头灯户外庭院中式别墅围墙立柱灯自动开关智能光控新中式', subtitle: '星途户外照明', price: 110, original: 0, sales: 64 },
+  { id: 'P10012', title: '中式复古柱头灯户外防水LED庭院灯菱形格栅装饰灯新中式', subtitle: '星途户外照明', price: 125, original: 0, sales: 52 },
+  { id: 'P10013', title: '太阳能柱头灯户外庭院别墅围墙立柱灯中式复古门柱灯新中式', subtitle: '星途户外照明', price: 88, original: 0, sales: 39 },
+  { id: 'P10014', title: '中式太阳能柱头灯LED户外庭院灯山水装饰照明灯具新中式', subtitle: '星途户外照明', price: 135, original: 0, sales: 30 },
 ];
 
 function fmt(n) { return Number(n).toFixed(2); }
+function imgsrc(id) { return IMG[id] || ''; }
 
 function renderHome(list) {
   const cols = [[], []];
   list.forEach((g, i) => cols[i % 2].push(g));
   const col = (arr) => arr.map((g) => `
     <div class="goods">
-      <div class="goods-img" style="background:${g.color}">
-        ${g.emoji}
+      <div class="goods-img">
+        <img src="${imgsrc(g.id)}" onerror="this.parentNode.innerHTML='🏮'" />
         ${g.original > g.price ? '<span class="goods-sale">促销</span>' : ''}
       </div>
       <div class="goods-body">
@@ -308,7 +312,8 @@ function renderHome(list) {
       <div class="search-box"><span>🔍</span>搜索庭院灯 / 壁灯 / 太阳能…</div>
       <div class="cart-btn">🛒<span class="badge-num">3</span></div>
     </div>
-    <div class="banner banner-1">
+    <div class="banner">
+      <img class="bg" src="images/banner1.jpg" />
       <div class="banner-inner">
         <span class="banner-tag">星途好物 · 焕新夜</span>
         <div class="banner-title">太阳能户外灯</div>
@@ -323,23 +328,22 @@ function renderHome(list) {
     <div class="waterfall"><div class="wf-col">${col(cols[0])}</div><div class="wf-col">${col(cols[1])}</div></div>`;
 }
 
-function renderDetail() {
-  const g = SAMPLE[0];
+function renderDetail(list) {
+  const g = list[0];
   document.getElementById('detail').innerHTML = `
-    <div class="detail-img" style="background:${g.color}">${g.emoji}</div>
-    <div class="detail-info card" style="margin:12px 14px;padding:14px">
-      <div><span class="detail-price">¥${fmt(g.price)}</span><span class="price-old" style="font-size:13px">¥${fmt(g.original)}</span></div>
+    <div class="detail-swiper">
+      <img class="main" src="${imgsrc(g.id)}" onerror="this.style.display='none';this.parentNode.innerHTML='🏮'" />
+      <div class="detail-dots"><i class="on"></i><i></i><i></i></div>
+    </div>
+    <div class="detail-info card" style="margin:12px 14px">
+      <div><span class="detail-price">¥${fmt(g.price)}</span>${g.original > g.price ? `<span class="price-old" style="font-size:13px">¥${fmt(g.original)}</span>` : ''}</div>
       <div style="font-size:15px;font-weight:600;margin-top:8px;line-height:1.5">${g.title}</div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">${g.subtitle} · 已售 ${g.sales}</div>
     </div>
-    <div class="service-bar">
-      <span>✓ 7天无理由退换</span><span>✓ 全国包邮</span><span>✓ 1年质保</span>
-    </div>
+    <div class="service-bar"><span>✓ 7天无理由退换</span><span>✓ 全国包邮</span><span>✓ 1年质保</span></div>
     <div class="sec card">
       <div class="sec-title">选择规格</div>
-      <div class="sku-row">
-        <span class="sku-item on">默认规格</span><span class="sku-item">暖光 3000K</span><span class="sku-item">白光 4000K</span>
-      </div>
+      <div class="sku-row"><span class="sku-item on">默认规格</span><span class="sku-item">暖光 3000K</span><span class="sku-item">白光 4000K</span></div>
       <div style="font-size:11px;color:var(--muted);margin-top:8px">库存：50</div>
     </div>
     <div class="sec card qty-row">
@@ -352,48 +356,49 @@ function renderDetail() {
     </div>`;
 }
 
-function renderChat() {
+function renderChat(list) {
   document.getElementById('chat').innerHTML = `
     <div class="chat-top">
-      <div class="chat-brand"><span class="chat-logo">星</span>星途 AI 智能客服</div>
+      <div class="chat-brand"><span class="chat-logo"><img src="images/logo.jpg" /></span>星途 AI 智能客服</div>
       <div class="chat-actions"><span class="chat-btn">🕘 历史</span><span class="chat-btn">＋ 新会话</span></div>
     </div>
     <div class="chat-list">
       <div class="msg assistant">
-        <div class="msg-avatar">🤖</div>
+        <div class="msg-avatar"><img src="images/logo.jpg" /></div>
         <div class="msg-bubble">你好，我是星途 AI 智能客服 🤖<br>可以为你解答商品 / 订单 / 售后问题～</div>
       </div>
       <div class="msg user"><div class="msg-bubble">推荐一款防水的太阳能庭院灯</div></div>
       <div class="msg assistant">
-        <div class="msg-avatar">🤖</div>
+        <div class="msg-avatar"><img src="images/logo.jpg" /></div>
         <div class="msg-bubble">
           推荐太阳能庭院灯与柱头灯，防水等级 IP65，天黑自动亮灯，充满电可亮 8-12 小时。
           <div class="card-row">
-            <div class="card-mini"><div class="t">太阳能庭院灯户外防水别墅围墙门柱氛围景观灯后现代</div><div class="p">¥180.00</div></div>
-            <div class="card-mini"><div class="t">太阳能柱头灯户外防水现代简约LED庭院灯福字方形围墙灯后现代</div><div class="p">¥350.00</div></div>
+            <div class="card-mini"><div class="t">${list[0].title}</div><div class="p">¥${fmt(list[0].price)}</div></div>
+            <div class="card-mini"><div class="t">${list[1].title}</div><div class="p">¥${fmt(list[1].price)}</div></div>
           </div>
           <div class="cite">📚 参考：商品咨询</div>
         </div>
       </div>
     </div>
-    <div class="chat-input-bar">
-      <div class="chat-input">问问商品、订单或售后…</div>
-      <div class="send-btn">发送</div>
-    </div>`;
+    <div class="chat-input-bar"><div class="chat-input">问问商品、订单或售后…</div><div class="send-btn">发送</div></div>`;
 }
 
-function renderOrders() {
+function renderOrders(list) {
   const rows = [
-    { id: '2026.10.6.15.0.6', name: '太阳能柱头灯户外防水现代简约LED庭院灯…', n: 1, amount: 350, status: 'unpaid', cls: 'st-unpaid', txt: '待支付' },
-    { id: '2026.10.3.14.0.3', name: '太阳能庭院灯户外防水别墅围墙门柱氛围景观灯…', n: 2, amount: 360, status: 'shipped', cls: 'st-shipped', txt: '待收货', track: '🚚 顺丰速运 SF1234567890' },
-    { id: '2026.10.4.16.0.4', name: '中式复古柱头灯别墅庭院围墙灯户外防水太阳能…', n: 1, amount: 120, status: 'completed', cls: 'st-completed', txt: '已完成' },
-    { id: '2026.10.5.9.0.5', name: 'LED 户外壁灯户外防水 IP65 玻璃灯罩壁挂灯具', n: 1, amount: 100, status: 'refunded', cls: 'st-refunded', txt: '已退款', track: '↩️ 退款 RFD20261007001' },
+    { id: '2026.10.6.15.0.6', g: list[0], n: 1, amount: list[0].price, status: 'unpaid', cls: 'st-unpaid', txt: '待支付' },
+    { id: '2026.10.3.14.0.3', g: list[1], n: 2, amount: list[1].price * 2, status: 'shipped', cls: 'st-shipped', txt: '待收货', track: '🚚 顺丰速运 SF1234567890' },
+    { id: '2026.10.4.16.0.4', g: list[2], n: 1, amount: list[2].price, status: 'completed', cls: 'st-completed', txt: '已完成' },
+    { id: '2026.10.5.9.0.5', g: list[3], n: 1, amount: list[3].price, status: 'refunded', cls: 'st-refunded', txt: '已退款', track: '↩️ 退款 RFD20261007001' },
   ];
   document.getElementById('orders').innerHTML = rows.map((o) => `
     <div class="card" style="margin:12px 14px">
       <div class="order-head"><span>订单 ${o.id}</span><span class="status-tag ${o.cls}">${o.txt}</span></div>
       <div class="order-goods">
-        <div class="goods-line"><span class="name">${o.name}</span><span>¥${fmt(o.amount/o.n)} × ${o.n}</span></div>
+        <div class="goods-line">
+          <span class="thumb"><img src="${imgsrc(o.g.id)}" onerror="this.parentNode.innerHTML='🏮'" /></span>
+          <span class="name">${o.g.title}</span>
+          <span>¥${fmt(o.amount / o.n)} × ${o.n}</span>
+        </div>
       </div>
       ${o.track ? `<div class="track">${o.track}</div>` : ''}
       <div class="order-foot">
@@ -409,7 +414,7 @@ function renderOrders() {
 function renderMine() {
   document.getElementById('mine').innerHTML = `
     <div class="mine-hero">
-      <div class="mine-avatar">👤</div>
+      <div class="mine-avatar"><img src="images/avatar.png" /></div>
       <div>
         <div class="mine-name">微信用户_123456</div>
         <span class="mine-role">普通会员</span>
@@ -427,8 +432,23 @@ function renderMine() {
 }
 
 function renderAll(list) {
-  renderHome(list); renderDetail(); renderChat(); renderOrders(); renderMine();
+  renderHome(list); renderDetail(list); renderChat(list); renderOrders(list); renderMine();
 }
+
+// 页面 / tab 切换
+function switchPage(p) {
+  document.querySelectorAll('.page-tab').forEach((x) => x.classList.toggle('active', x.dataset.p === p));
+  document.querySelectorAll('.tab-item').forEach((x) => x.classList.toggle('on', x.dataset.tab === p));
+  ['home', 'detail', 'chat', 'orders', 'mine'].forEach((id) => {
+    document.getElementById(id).style.display = id === p ? 'block' : 'none';
+  });
+}
+document.querySelectorAll('.page-tab').forEach((el) => {
+  el.addEventListener('click', () => switchPage(el.dataset.p));
+});
+document.querySelectorAll('.tab-item').forEach((el) => {
+  el.addEventListener('click', () => switchPage(el.dataset.tab));
+});
 
 // 优先拉取真实商品接口，失败用内置样例
 (function boot() {
@@ -436,26 +456,14 @@ function renderAll(list) {
     .then((r) => r.json())
     .then((d) => {
       const list = (d.items || []).map((it) => ({
-        title: it.title, subtitle: it.subtitle || '', price: Number(it.price),
-        original: Number(it.original_price || 0), sales: it.sales_count || 0,
-        color: ['linear-gradient(135deg,#ffe29a,#ffc46b)','linear-gradient(135deg,#c9b8ff,#a88cf0)','linear-gradient(135deg,#a8e6c0,#68c99a)','linear-gradient(135deg,#b8d4ff,#7da8f0)','linear-gradient(135deg,#ffd0a8,#f09a6b)','linear-gradient(135deg,#a8e6e0,#5fc9c0)'][Math.floor(Math.random()*6)],
-        emoji: ['🏮','🏛','🌿','💡','🎐','🪔'][Math.floor(Math.random()*6)],
+        id: it.product_id, title: it.title, subtitle: it.subtitle || '',
+        price: Number(it.price), original: Number(it.original_price || 0),
+        sales: it.sales_count || 0,
       }));
       renderAll(list.length ? list : SAMPLE);
     })
     .catch(() => renderAll(SAMPLE));
 })();
-
-// 页面切换
-document.querySelectorAll('.page-tab').forEach((el) => {
-  el.addEventListener('click', () => {
-    document.querySelectorAll('.page-tab').forEach((x) => x.classList.remove('active'));
-    el.classList.add('active');
-    ['home', 'detail', 'chat', 'orders', 'mine'].forEach((id) => {
-      document.getElementById(id).style.display = id === el.dataset.p ? 'block' : 'none';
-    });
-  });
-});
 </script>
 </body>
 </html>
