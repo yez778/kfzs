@@ -160,7 +160,7 @@ def build_graph():
 
     graph.add_conditional_edges(
         "grounding_check",
-        lambda state: "final_answer" if state.get("grounding_paragssed") else "escalate_human",
+        lambda state: "final_answer" if state.get("grounding_passed") else "escalate_human",
         {"final_answer": "final_answer", "escalate_human": "escalate_human"},
     )
     graph.add_edge("escalate_human", "final_answer")

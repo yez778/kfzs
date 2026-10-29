@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     agent_service_url: str = ""
     # 内部服务令牌：供 agent 等内部服务调用 /internal/* 接口
     service_token: str = ""
+    # 限流与信任主机（生产建议显式配置 ALLOWED_HOSTS）
+    rate_limit_enabled: bool = True
+    rate_limit_per_minute: int = 180
+    login_rate_limit_per_minute: int = 10
+    allowed_hosts_raw: str = Field(default="*", alias="ALLOWED_HOSTS")
     cors_origins_raw: str = Field(
         default="http://localhost:3000,http://localhost:5173",
         alias="CORS_ORIGINS",
@@ -87,6 +92,11 @@ class Settings(BaseSettings):
         extra="ignore",
         populate_by_name=True,
     )
+
+    @property
+    def allowed_hosts(self) -> list[str]:
+        # TrustedHost 白名单：逗号分隔，* 表示不限制
+        return [h.strip() for h in (self.allowed_hosts_raw or "*").split(",") if h.strip()]
 
     @property
     def cors_origins(self) -> list[str]:

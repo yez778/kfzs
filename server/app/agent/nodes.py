@@ -471,7 +471,8 @@ async def handle_product(state: dict[str, Any]) -> dict[str, Any]:
         answer = _recommend_intro(intro_strategy, listing)
         citations = [{"source": "products.md", "text": listing, "score": 1.0}]
         relevance_score = max(relevance_score, 0.5)
-    chunks = [_clip_text(c.get("text", "")) for c in citations[:2] if c.get("text")]
+    # 依据文本保留完整上下文（截断过短会把价格等事实截掉，导致 grounding 误拦转人工）
+    chunks = [_clip_text(c.get("text", ""), 400) for c in citations[:2] if c.get("text")]
     sources = sorted({c.get("source", "unknown") for c in citations})
     if listing:
         chunks.append(listing)

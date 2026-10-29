@@ -3,6 +3,7 @@ import tempfile
 
 
 _TMP_DIR = tempfile.mkdtemp(prefix="doudian_test_")
+os.environ.setdefault("RATE_LIMIT_ENABLED", "false")  # 测试环境关闭限流
 os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{_TMP_DIR}/test_doudian.db"  # 测试使用独立临时库，避免污染开发数据
 os.environ["ENV"] = "test"
 os.environ["LLM_PROVIDER"] = "mock"
