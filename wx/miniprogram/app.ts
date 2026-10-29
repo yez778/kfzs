@@ -60,9 +60,16 @@ App<IAppOption>({
 
   mediaUrl(url: string): string {
     if (!url) return '';
-    if (/^https?:\/\//i.test(url)) return url;
-    if (url.startsWith('/api/')) return this.globalData.apiBase + url;
-    if (url.startsWith('/uploads/')) return this.globalData.apiBase + url;
+    // 相对路径（/api/、/uploads/、/shop/cover-proxy 等）统一拼上后端地址
+    if (url.startsWith('/')) return this.globalData.apiBase + url;
+    if (/^https?:\/\//i.test(url)) {
+      // 淘宝等外链商品图：走后端 cover-proxy 代理（防盗链 + 真机免配域名白名单）
+      if (/\.alicdn\.com\//i.test(url) || /images\.unsplash\.com/i.test(url)) {
+        return this.globalData.apiBase + '/shop/cover-proxy?u=' + encodeURIComponent(url);
+      }
+      // 其他外链（微信头像 qlogo 等）：开发者工具可直链，真机需配合法域名
+      return url;
+    }
     return url;
   },
 
