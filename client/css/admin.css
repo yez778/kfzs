@@ -292,3 +292,86 @@ input, select, textarea { font-family: inherit; font-size: 14px; }
   font-size: 12.5px; color: #2f6bff; background: #eef3ff;
   border-radius: 6px; padding: 6px 10px; font-family: ui-monospace, Menlo, monospace;
 }
+
+/* ============ 视觉增强：登录页 / 侧边栏 / 统计卡 / 按钮 ============ */
+.login-wrap {
+  background:
+    radial-gradient(900px 400px at 85% -10%, rgba(255, 255, 255, 0.22), transparent 60%),
+    radial-gradient(700px 380px at -10% 110%, rgba(106, 168, 255, 0.35), transparent 55%),
+    linear-gradient(135deg, #1e5eff 0%, #3d7bff 48%, #6aa8ff 100%);
+}
+.login-card {
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 30px 80px rgba(12, 30, 80, 0.38);
+}
+.login-logo {
+  background: linear-gradient(135deg, #1e5eff, #6aa8ff);
+  box-shadow: 0 10px 24px rgba(30, 94, 255, 0.35);
+}
+
+/* 侧边栏品牌渐变 */
+.sidebar {
+  background: linear-gradient(180deg, #12234a 0%, #1a3a80 100%);
+}
+.brand-dot {
+  background: linear-gradient(135deg, #4f8bff, #6aa8ff);
+  box-shadow: 0 8px 20px rgba(30, 94, 255, 0.4);
+}
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* 主按钮渐变 */
+.btn-primary {
+  background: linear-gradient(135deg, #2f6bff, #4f8bff);
+  border: none;
+  box-shadow: 0 6px 18px rgba(47, 107, 255, 0.3);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #1f54d6, #3d7bff);
+  box-shadow: 0 8px 22px rgba(47, 107, 255, 0.4);
+}
+
+/* 统计卡片：彩色顶条 */
+.stat {
+  position: relative;
+  overflow: hidden;
+}
+.stat::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #2f6bff;
+}
+.stat-on::before { background: #07b96b; }
+.stat-off::before { background: #d97706; }
+.stat-red::before { background: #e5484d; }
+
+/* 表格行 hover + 斑马纹 */
+.table tbody tr:nth-child(even) { background: #fbfcff; }
+.table tbody tr:hover { background: #f0f5ff; }
+
+/* 顶栏渐变下划线 */
+.topbar {
+  background: #fff;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, #2f6bff, #6aa8ff, #2f6bff) 1;
+}
+
+/* 弹窗标题条 */
+.modal-head {
+  background: linear-gradient(135deg, #f6f9ff, #eef3ff);
+}
+
+/* 徽章圆角统一 */
+.badge { border-radius: 6px; }
+
+/* 空态 */
+.state {
+  background:
+    radial-gradient(400px 160px at 50% 0%, rgba(47, 107, 255, 0.05), transparent 60%);
+}

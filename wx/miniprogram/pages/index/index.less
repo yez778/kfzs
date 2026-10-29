@@ -3,6 +3,54 @@
   padding-bottom: 40rpx;
 }
 
+/* ===== 轮播 Banner ===== */
+.banner {
+  height: 300rpx;
+  margin: 20rpx 20rpx 0;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+.banner-item {
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+.banner-inner {
+  position: relative;
+  height: 100%;
+  padding: 40rpx 44rpx;
+  box-sizing: border-box;
+}
+.banner-1 { background: linear-gradient(135deg, #2f6bff, #5b8cff 55%, #8ab0ff); }
+.banner-2 { background: linear-gradient(135deg, #7a4bd0, #a56fe0 55%, #c79af0); }
+.banner-3 { background: linear-gradient(135deg, #07b96b, #22c98a 55%, #5ad9a8); }
+.banner-tag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 20rpx;
+  padding: 4rpx 18rpx;
+}
+.banner-title {
+  color: #fff;
+  font-size: 40rpx;
+  font-weight: 700;
+  margin-top: 18rpx;
+  letter-spacing: 2rpx;
+}
+.banner-sub {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 24rpx;
+  margin-top: 10rpx;
+}
+.banner-emoji {
+  position: absolute;
+  right: 44rpx;
+  bottom: 30rpx;
+  font-size: 88rpx;
+  opacity: 0.9;
+}
+
 /* 搜索栏 */
 .search-bar {
   display: flex;
@@ -100,14 +148,32 @@
 }
 .goods-card {
   margin-bottom: 16rpx;
+  transition: transform 0.15s ease;
+}
+.goods-hover {
+  transform: scale(0.98);
+}
+.goods-img-wrap {
+  position: relative;
+  background: linear-gradient(180deg, #eef3ff, #f8fafd);
 }
 .goods-img {
   width: 100%;
   display: block;
-  background: #eef1f6;
+}
+.goods-sale {
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  font-size: 20rpx;
+  color: #fff;
+  background: linear-gradient(135deg, #e5484d, #f0716f);
+  border-radius: 18rpx;
+  padding: 4rpx 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(229, 72, 77, 0.35);
 }
 .goods-body {
-  padding: 14rpx 16rpx 18rpx;
+  padding: 16rpx 16rpx 20rpx;
 }
 .goods-title {
   font-size: 26rpx;
@@ -130,19 +196,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10rpx;
+  margin-top: 12rpx;
 }
 .goods-price {
   font-size: 30rpx;
 }
+.goods-price .price {
+  background: linear-gradient(90deg, #e5484d, #f0716f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
 .goods-add {
   width: 52rpx;
   height: 52rpx;
-  background: linear-gradient(135deg, #1e5eff, #4f8bff);
+  background: var(--brand-grad);
   color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 30rpx;
+  box-shadow: 0 6rpx 16rpx rgba(30, 94, 255, 0.3);
+  transition: transform 0.15s ease;
+}
+.goods-add:active {
+  transform: scale(0.9);
 }

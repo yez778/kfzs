@@ -7,8 +7,18 @@
     "lazyloadPlaceholderEnable": false,
     "preloadBackgroundData": false,
     "autoPrefetch": false,
-    "showShadowRootInWxmlPanel": true
+    "showShadowRootInWxmlPanel": true,
+    "skylineRenderEnable": false,
+    "autoAudits": false,
+    "useApiHook": true,
+    "useStaticServer": false,
+    "useLanDebug": false,
+    "showES6CompileOption": false,
+    "checkInvalidKey": true,
+    "ignoreDevUnusedFiles": true,
+    "bigPackageSizeSupport": false
   },
   "projectname": "xingtu-miniprogram",
-  "condition": {}
+  "condition": {},
+  "libVersion": "3.17.5"
 }

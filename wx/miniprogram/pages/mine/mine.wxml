@@ -33,27 +33,27 @@
 
     <!-- 快捷入口 -->
     <view class="card menu">
-      <view class="menu-item" bindtap="goChat">
+      <view class="menu-item" bindtap="goChat" hover-class="menu-hover">
         <text class="menu-icon">🤖</text>
         <text class="menu-text">AI 智能客服</text>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goOrders">
+      <view class="menu-item" bindtap="goOrders" hover-class="menu-hover">
         <text class="menu-icon">📦</text>
         <text class="menu-text">我的订单</text>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goCart">
+      <view class="menu-item" bindtap="goCart" hover-class="menu-hover">
         <text class="menu-icon">🛒</text>
         <text class="menu-text">购物车</text>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goHome">
+      <view class="menu-item" bindtap="goHome" hover-class="menu-hover">
         <text class="menu-icon">🏠</text>
         <text class="menu-text">回到首页</text>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="copyBackend">
+      <view class="menu-item" bindtap="copyBackend" hover-class="menu-hover">
         <text class="menu-icon">🔗</text>
         <text class="menu-text">后端地址：{{user ? '已复制' : ''}}</text>
         <text class="menu-arrow">›</text>

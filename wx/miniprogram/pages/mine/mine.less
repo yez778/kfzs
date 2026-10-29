@@ -50,12 +50,34 @@
 
 /* 已登录用户卡片 */
 .user-card {
-  background: linear-gradient(160deg, #1e5eff, #4f8bff);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1e5eff 0%, #4f8bff 55%, #6aa8ff 100%);
   padding: 48rpx 36rpx;
-  border-radius: 0 0 40rpx 40rpx;
+  border-radius: 0 0 48rpx 48rpx;
   display: flex;
   align-items: center;
   gap: 24rpx;
+}
+.user-card::after {
+  content: '';
+  position: absolute;
+  right: -60rpx;
+  top: -60rpx;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+.user-card::before {
+  content: '';
+  position: absolute;
+  right: 40rpx;
+  bottom: -80rpx;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
 }
 .user-avatar {
   width: 110rpx;
@@ -93,9 +115,17 @@
   background: #fff;
   border-radius: 24rpx;
   padding: 4rpx 18rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(20, 40, 90, 0.15);
 }
 .wallet {
+  position: relative;
+  z-index: 1;
   text-align: right;
+  background: rgba(255, 255, 255, 0.16);
+  border: 2rpx solid rgba(255, 255, 255, 0.25);
+  border-radius: 20rpx;
+  padding: 14rpx 22rpx;
 }
 .wallet-label {
   color: rgba(255, 255, 255, 0.75);
@@ -115,20 +145,36 @@
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 28rpx 24rpx;
+  padding: 26rpx 24rpx;
   border-bottom: 2rpx solid #f5f6fa;
 }
 .menu-item:last-child {
   border-bottom: none;
 }
-.menu-icon {
-  font-size: 36rpx;
-  margin-right: 20rpx;
+.menu-hover {
+  background: #f6f9ff;
 }
+.menu-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  margin-right: 20rpx;
+  background: linear-gradient(135deg, #eef3ff, #f6f9ff);
+}
+.menu-item:nth-child(1) .menu-icon { background: linear-gradient(135deg, #e9f7ef, #d5f3e2); }
+.menu-item:nth-child(2) .menu-icon { background: linear-gradient(135deg, #eef3ff, #dce8ff); }
+.menu-item:nth-child(3) .menu-icon { background: linear-gradient(135deg, #fff7e8, #ffe9c7); }
+.menu-item:nth-child(4) .menu-icon { background: linear-gradient(135deg, #f3f0ff, #e4ddff); }
+.menu-item:nth-child(5) .menu-icon { background: linear-gradient(135deg, #fdeef0, #fadfe1); }
 .menu-text {
   flex: 1;
   font-size: 28rpx;
   color: #23273a;
+  font-weight: 500;
 }
 .menu-arrow {
   color: #c3c8d4;
