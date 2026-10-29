@@ -99,7 +99,24 @@ async def product(
     item = find_product(product_id)
     if item is None:
         raise HTTPException(status_code=404, detail="商品不存在")
-    return product_detail(item)
+    detail = product_detail(item)
+    # 用库存表（product_inventory）的真实余量覆盖静态 SKU 快照，保证下单后库存可见
+    inventory = {inv.sku_id: inv.stock for inv in await _load_inventory(product_id)}
+    for sku in detail.get("skus") or []:
+        sku_id = str(sku.get("sku_id") or "")
+        if sku_id in inventory:
+            sku["stock"] = int(inventory[sku_id])
+    return detail
+
+
+async def _load_inventory(product_id: str) -> list:
+    from ..models import ProductInventory
+
+    async with async_session_factory() as session:
+        rows = await session.scalars(
+            select(ProductInventory).where(ProductInventory.product_id == product_id)
+        )
+        return list(rows)
 
 
 @router.post("/checkout", response_model=CheckoutResponse)

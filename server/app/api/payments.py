@@ -62,6 +62,28 @@ async def _load_payment(
     return payment
 
 
+async def _sync_from_v2_query(db: AsyncSession, query: dict) -> PaymentStatusOut:
+    """按官方 orderquery 结果同步支付单/订单（SUCCESS 时走幂等履约），不伪造任何状态。"""
+    out_trade_no = query.get("out_trade_no") or ""
+    payment = await db.scalar(
+        select(PaymentOrder).where(PaymentOrder.out_trade_no == out_trade_no)
+    )
+    if payment is None:
+        raise HTTPException(status_code=404, detail="支付单不存在")
+    order = await db.scalar(select(Order).where(Order.order_id == payment.order_id))
+    state = (query.get("trade_state") or "").upper()
+    if state == "SUCCESS":
+        order = await fulfill_payment_success(
+            db, payment, transaction_id=query.get("transaction_id") or None
+        )
+        await db.refresh(payment)
+        return _status_out(payment, order)
+    await db.refresh(payment)
+    out = _status_out(payment, order)
+    out.trade_state = state or payment.trade_state
+    return out
+
+
 def _status_out(payment: PaymentOrder, order: Order | None, include_params: bool = False) -> PaymentStatusOut:
     status = (order.status if order else _ORDER_STATUS.get(payment.trade_state, "unpaid")) or "unpaid"
     return PaymentStatusOut(
@@ -117,12 +139,10 @@ async def payment_config(user: User = Depends(get_current_staff)) -> dict:
         "order_expire_minutes": settings.payment_order_expire_minutes,
         # 沙箱密钥是否已缓存（第一次统一下单时自动获取）
         "sandbox_sign_key_cached": bool(payment_v2.sandbox_key_cache.get_cached()),
-        "gateway": {
-            "getsignkey": payment_v2.GETSIGNKEY_URL,
-            "unifiedorder": payment_v2.UNIFIEDORDER_URL,
-            "orderquery": payment_v2.ORDERQUERY_URL,
-            "closeorder": payment_v2.CLOSEORDER_URL,
-        },
+        "gateway": payment_v2.gateway_urls(),
+        "gateway_base": payment_v2.sandbox_base(),
+        "gateway_is_official": "api.mch.weixin.qq.com" in payment_v2.sandbox_base(),
+        "public_test_credentials": (mch_id == "1900000109"),
         "issues": issues,
         "ready": settings.payment_enabled and not issues,
     }
@@ -186,18 +206,8 @@ async def sandbox_complete(
             query = await payment_v2.order_query(out_trade_no=payment.out_trade_no)
         except payment_v2.V2PaymentError as exc:
             raise HTTPException(status_code=exc.code, detail=exc.message) from None
-        state = (query["trade_state"] or "").upper()
-        if state == "SUCCESS":
-            order = await fulfill_payment_success(
-                db, payment, transaction_id=query["transaction_id"] or None
-            )
-            await db.refresh(payment)
-            return _status_out(payment, order)
-        # NOTPAY / USERPAYING / PAYERROR 等：原样返回当前状态，不伪造成功
-        await db.refresh(payment)
-        out = _status_out(payment, order)
-        out.trade_state = state or payment.trade_state
-        return out
+        # 官方协议返回什么就是什么（NOTPAY/USERPAYING/SUCCESS），不伪造
+        return await _sync_from_v2_query(db, query)
 
     # 本地自建沙箱：result=SUCCESS 成功 / USERPAYING 支付中 / PAYERROR 支付失败（可重试）
     result = (payload.result or "SUCCESS").upper()
@@ -236,6 +246,51 @@ async def sandbox_complete(
         raise HTTPException(status_code=status, detail=str(getattr(exc, "message", exc))) from None
     await db.refresh(payment)
     return _status_out(payment, order)
+
+
+@router.post("/sandbox/pay", response_model=PaymentStatusOut)
+async def sandbox_v2_pay(
+    payload: SandboxCompleteRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> PaymentStatusOut:
+    """V2 沙箱模式下的模拟付款：调 V2 网关 /pay/mockpay 完成付款，再走 orderquery 同步状态。
+
+    仅用于本地/自建 V2 协议网关（官方 sandboxnew 已下线，无官方付款触发入口）。
+    真实商户接入后请改用 wx.requestPayment + 异步通知。
+    """
+    if not settings.payment_is_v2_sandbox:
+        raise HTTPException(status_code=400, detail="当前不是 v2sandbox 模式")
+
+    payment = await _load_payment(db, out_trade_no=payload.out_trade_no)
+    if payment is None:
+        raise HTTPException(status_code=404, detail="支付单不存在")
+    order_check = await db.scalar(select(Order).where(Order.order_id == payment.order_id))
+    if order_check is None or order_check.user_id != user.id:
+        raise HTTPException(status_code=404, detail="订单不存在")
+
+    body = {
+        "out_trade_no": payment.out_trade_no,
+        "nonce_str": payment_v2.nonce_str(),
+    }
+    body["sign"] = payment_v2.sign_md5(body, await payment_v2.get_sandbox_sign_key())
+    url = payment_v2.gateway_urls()["orderquery"].replace("orderquery", "mockpay")
+    try:
+        data = await payment_v2._post_xml(url, body)
+    except payment_v2.V2PaymentError as exc:
+        raise HTTPException(status_code=exc.code, detail=exc.message) from None
+    if data.get("result_code") != "SUCCESS":
+        raise HTTPException(
+            status_code=400,
+            detail=f"模拟付款失败：{data.get('err_code', '')} {data.get('err_code_des', '')}".strip(),
+        )
+
+    # 付款结果以官方协议 orderquery 为准同步
+    try:
+        query = await payment_v2.order_query(out_trade_no=payment.out_trade_no)
+    except payment_v2.V2PaymentError as exc:
+        raise HTTPException(status_code=exc.code, detail=exc.message) from None
+    return await _sync_from_v2_query(db, query)
 
 
 @router.get("/by-order/{order_id}", response_model=PaymentStatusOut)

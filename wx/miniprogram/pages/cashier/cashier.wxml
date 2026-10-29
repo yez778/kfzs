@@ -78,6 +78,8 @@
       </view>
       <view class="demo-btns">
         <button class="btn direct-pay" bindtap="callWxPay" disabled="{{busy}}">💳 调起微信支付</button>
+        <button wx:if="{{payMode === 'v2sandbox'}}" class="btn btn-ghost demo-btn"
+                bindtap="sandboxPay" disabled="{{busy}}">🧪 模拟沙箱付款（V2 网关）</button>
         <button class="btn btn-ghost demo-btn" bindtap="verifyPaid">🔍 查询支付结果</button>
       </view>
       <view class="demo-tip">

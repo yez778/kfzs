@@ -80,6 +80,8 @@ class Settings(BaseSettings):
     payment_order_expire_minutes: int = 15
     # 官方 V2 仿真专用：真实 APIv2 密钥（用它调 getsignkey 换取沙箱密钥）与一个真实测试 openid
     payment_api_v2_key: str = ""
+    # V2 沙箱网关基址：官方 sandboxnew 已下线（404），可指向本地/自建 V2 协议网关
+    payment_sandbox_base: str = "https://api.mch.weixin.qq.com/sandboxnew"
     payment_sandbox_openid: str = ""
 
     @property

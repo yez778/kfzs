@@ -29,11 +29,22 @@ from ..config import settings
 
 logger = logging.getLogger(__name__)
 
-SANDBOX_BASE = "https://api.mch.weixin.qq.com/sandboxnew"
-GETSIGNKEY_URL = f"{SANDBOX_BASE}/pay/getsignkey"
-UNIFIEDORDER_URL = f"{SANDBOX_BASE}/pay/unifiedorder"
-ORDERQUERY_URL = f"{SANDBOX_BASE}/pay/orderquery"
-CLOSEORDER_URL = f"{SANDBOX_BASE}/pay/closeorder"
+DEFAULT_SANDBOX_BASE = "https://api.mch.weixin.qq.com/sandboxnew"
+
+
+def sandbox_base() -> str:
+    """当前 V2 网关基址（官方 sandboxnew 已下线，可配置为本地/自建 V2 协议网关）"""
+    return (settings.payment_sandbox_base or DEFAULT_SANDBOX_BASE).rstrip("/")
+
+
+def gateway_urls() -> dict[str, str]:
+    base = sandbox_base()
+    return {
+        "getsignkey": f"{base}/pay/getsignkey",
+        "unifiedorder": f"{base}/pay/unifiedorder",
+        "orderquery": f"{base}/pay/orderquery",
+        "closeorder": f"{base}/pay/closeorder",
+    }
 
 # 微信通信成功标识
 RETURN_SUCCESS = "SUCCESS"
@@ -170,8 +181,9 @@ async def get_sandbox_sign_key(*, force_refresh: bool = False) -> str:
 
     mch_id = settings.payment_mch_id
     real_key = settings.payment_api_v2_key
+    # 1900000000 是本地占位号；1900000109 是微信官方文档公开的沙箱测试商户号
     if not mch_id or mch_id == "1900000000":
-        raise V2PaymentError("未配置真实微信支付商户号 PAYMENT_MCH_ID", code=400)
+        raise V2PaymentError("未配置微信支付商户号 PAYMENT_MCH_ID", code=400)
     if not real_key or real_key == settings.payment_mch_key:
         raise V2PaymentError(
             "V2 仿真环境必须配置真实 APIv2 密钥 PAYMENT_API_V2_KEY（商户平台-API安全-APIv2密钥）",
@@ -183,7 +195,7 @@ async def get_sandbox_sign_key(*, force_refresh: bool = False) -> str:
         "nonce_str": nonce_str(),
     }
     body["sign"] = sign_md5(body, real_key)
-    data = await _post_xml(GETSIGNKEY_URL, body)
+    data = await _post_xml(gateway_urls()["getsignkey"], body)
     if data.get("return_code") != RETURN_SUCCESS:
         raise V2PaymentError(f"[getsignkey] {data.get('return_msg', '获取沙箱密钥失败')}", code=502)
     sandbox_key = data.get("sandbox_signkey") or ""
@@ -226,11 +238,11 @@ def missing_v2_config() -> list[str]:
         issues.append("PAYMENT_APPID 或 WECHAT_APPID")
     mch_id = (settings.payment_mch_id or "").strip()
     if not mch_id or mch_id == "1900000000":
-        issues.append("PAYMENT_MCH_ID（真实商户号）")
+        issues.append("PAYMENT_MCH_ID（商户号，可用官方公开测试号 1900000109）")
     if not (settings.payment_api_v2_key or "").strip():
         issues.append("PAYMENT_API_V2_KEY（商户平台 APIv2 密钥）")
     if not (settings.payment_sandbox_openid or "").strip():
-        issues.append("PAYMENT_SANDBOX_OPENID（真实小程序用户 openid）")
+        issues.append("PAYMENT_SANDBOX_OPENID（小程序用户 openid）")
     return issues
 
 
@@ -258,11 +270,11 @@ async def unified_order_jsapi(
         "out_trade_no": out_trade_no,
         "total_fee": int(amount_fen),
         "spbill_create_ip": client_ip,
-        "notify_url": settings.payment_notify_url or f"{SANDBOX_BASE}/pay/notifyurl",
+        "notify_url": settings.payment_notify_url or f"{sandbox_base()}/pay/notifyurl",
         "trade_type": "JSAPI",
         "openid": resolve_jsapi_openid(openid),
     }
-    data = await _signed_sandbox_post(UNIFIEDORDER_URL, params, "unifiedorder")
+    data = await _signed_sandbox_post(gateway_urls()["unifiedorder"], params, "unifiedorder")
     prepay_id = data.get("prepay_id") or ""
     if not prepay_id:
         raise V2PaymentError("统一下单未返回 prepay_id", code=502)
@@ -312,7 +324,7 @@ async def order_query(*, out_trade_no: str = "", transaction_id: str = "") -> di
         params["out_trade_no"] = out_trade_no
     else:
         raise V2PaymentError("orderquery 必须提供 out_trade_no 或 transaction_id", code=400)
-    data = await _signed_sandbox_post(ORDERQUERY_URL, params, "orderquery")
+    data = await _signed_sandbox_post(gateway_urls()["orderquery"], params, "orderquery")
     return {
         "out_trade_no": data.get("out_trade_no", out_trade_no),
         "transaction_id": data.get("transaction_id", ""),
@@ -331,7 +343,7 @@ async def close_order(*, out_trade_no: str) -> dict:
         "out_trade_no": out_trade_no,
         "nonce_str": nonce_str(),
     }
-    return await _signed_sandbox_post(CLOSEORDER_URL, params, "closeorder")
+    return await _signed_sandbox_post(gateway_urls()["closeorder"], params, "closeorder")
 
 
 def verify_v2_notify(data: dict, *, sandbox_key: str | None = None) -> bool:

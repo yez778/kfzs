@@ -108,6 +108,32 @@ Page({
     });
   },
 
+  // 本地 V2 协议网关模拟付款（官方 sandboxnew 已下线，无官方付款触发入口）
+  async sandboxPay() {
+    if (this.data.busy) return;
+    this.setData({ busy: true });
+    wx.showLoading({ title: '沙箱付款中', mask: true });
+    try {
+      const st = await app.request<IPaymentStatus>('/payments/sandbox/pay', {
+        method: 'POST',
+        data: { out_trade_no: this.data.outTradeNo },
+      });
+      wx.hideLoading();
+      this.setData({ busy: false, status: st.status, tradeState: st.trade_state });
+      if (st.status === 'paid') {
+        this.setData({ view: 'success' });
+        wx.showToast({ title: '支付成功', icon: 'success' });
+        setTimeout(() => wx.redirectTo({ url: '/pages/orders/orders' }), 1500);
+      } else {
+        this.setData({ view: 'paying', failReason: st.trade_state || '' });
+      }
+    } catch (e: any) {
+      wx.hideLoading();
+      this.setData({ busy: false });
+      wx.showToast({ title: e.message || '沙箱付款失败', icon: 'none' });
+    }
+  },
+
   // 主动查询支付结果（V2 沙箱：以 orderquery 返回为准同步订单状态）
   async verifyPaid() {
     wx.showLoading({ title: '查询支付结果', mask: true });
