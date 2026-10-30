@@ -12,3 +12,6 @@ node_modules/
 .DS_Store
 *.pyc
 .idea/
+# 微信开发者工具/tsc 编译产物（源文件为 .ts，勿提交）
+wx/miniprogram/**/*.js
+wx/miniprogram/**/*.js.map
