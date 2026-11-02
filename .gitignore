@@ -13,3 +13,6 @@ node_modules/
 # 微信开发者工具/tsc 编译产物（源文件为 .ts，勿提交）
 wx/miniprogram/**/*.js
 wx/miniprogram/**/*.js.map
+
+# ONNX 嵌入模型（改为运行时自动下载，不入库）
+server/vendor/chroma-onnx/

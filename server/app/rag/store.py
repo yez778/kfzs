@@ -16,6 +16,7 @@ from chromadb.utils import embedding_functions
 
 from ..config import settings
 from .loaders import load_knowledge_markdown
+from .model_download import ensure_model, is_model_ready
 
 _lock = threading.Lock()
 _client: Any = None
@@ -55,17 +56,8 @@ class HashEmbeddingFunction:
 
 
 def _onnx_model_cached() -> bool:
-    # Chroma MiniLM 已解压到缓存时才启用语义向量，避免启动时再下载
-    extracted = Path.home() / ".cache" / "chroma" / "onnx_models" / "all-MiniLM-L6-v2" / "onnx"
-    required = (
-        "config.json",
-        "model.onnx",
-        "special_tokens_map.json",
-        "tokenizer_config.json",
-        "tokenizer.json",
-        "vocab.txt",
-    )
-    return all((extracted / name).is_file() for name in required)
+    # 模型是否已就位于本地缓存（下载与校验逻辑见 rag/model_download.py）
+    return is_model_ready()
 
 
 # 双通道嵌入：优先 ONNX 语义模型，任何异常都自动回退到哈希嵌入，保证服务可用
@@ -73,11 +65,10 @@ class SafeEmbeddingFunction:
     """Try ONNX MiniLM first, then fall back to an offline hash embedding."""
 
     def __init__(self) -> None:
-        # 模型已在镜像/本机缓存，或显式允许下载时才加载 MiniLM
+        # 模型已缓存就直接用；缺失则按需下载（默认启用，CHROMA_DOWNLOAD_ONNX=0 可关闭）
         self._onnx = None
         self._hash = HashEmbeddingFunction()
-        allow_download = os.getenv("CHROMA_DOWNLOAD_ONNX") == "1"
-        if _onnx_model_cached() or allow_download:
+        if is_model_ready() or ensure_model():
             try:
                 self._onnx = embedding_functions.ONNXMiniLM_L6_V2()
             except Exception:

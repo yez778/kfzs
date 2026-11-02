@@ -13,9 +13,11 @@ RUN apt-get update \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY vendor/chroma-onnx/all-MiniLM-L6-v2 /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
-
 COPY app ./app
+
+# 构建阶段预下载 ONNX 嵌入模型（约 87MB）到 /root/.cache，避免首次启动等待；
+# 构建环境无外网时删掉此行也可，容器启动时会自动重试下载
+RUN python -m app.rag.model_download || echo "ONNX 模型预下载失败，将在运行时重试"
 
 EXPOSE 8000
 

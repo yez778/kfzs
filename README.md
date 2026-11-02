@@ -38,6 +38,16 @@ cd client && python -m http.server 3000
 
 Windows 一键脚本：`启动后端.bat`、`client/启动管理后台.bat`。
 
+## ONNX 嵌入模型（按需下载）
+
+RAG 语义检索所用的 `all-MiniLM-L6-v2`（约 87MB）**不再入库**，改为运行时自动下载：
+
+- 缓存位置：`~/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx`
+- 默认启用；`CHROMA_DOWNLOAD_ONNX=0` 关闭后，检索自动退回哈希嵌入（服务不中断）
+- `CHROMA_ONNX_MODEL_URL` 可指定镜像/内网下载源
+- 手动预热：`cd server && python -m app.rag.model_download`
+- Docker 构建阶段已自动预下载，容器首次启动无需等待
+
 ## 功能清单
 
 - **微信小程序（wx）**：首页瀑布流 / 搜索分类、商品详情、购物车结算（收货信息）、
