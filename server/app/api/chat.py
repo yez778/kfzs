@@ -33,100 +33,6 @@ from .deps import get_current_user
 router = APIRouter(tags=["chat"])
 
 
-async def _chat_via_agent(
-    payload: ChatRequest,
-    user: User,
-    db: AsyncSession,
-) -> ChatResponse:
-    """转发到独立 AI 客服服务（agent/）：会话消息仍落库，回复由 agent 生成。"""
-    import httpx
-
-    session = await get_or_create_session(db, user.id, payload.session_id)
-    db.add(
-        Message(
-            session_id=session.id,
-            role="user",
-            content=payload.message,
-        )
-    )
-    await db.commit()
-
-    # 转人工判定（与内置链路一致）：已在人工队列时肯定词→提示等待；新问题→交回 AI
-    if session.handoff_status in ("waiting", "active"):
-        if is_handoff_affirmative(payload.message):
-            db.add(Message(session_id=session.id, role="assistant", content=HANDOFF_HOLD_REPLY))
-            await db.commit()
-            return ChatResponse(
-                session_id=session.id,
-                message_id=0,
-                response=HANDOFF_HOLD_REPLY,
-                needs_human=True,
-                route={"intent": "human_handoff", "action": "human_handoff", "slots": {}, "reason_code": "handoff_active"},
-            )
-        # 用户提了新问题：重置为 AI 接管
-        session.handoff_status = "none"
-        session.handled_by = None
-        await db.commit()
-
-    # 用户明确要求转人工：进入人工队列，不再转发给 agent
-    if is_handoff_affirmative(payload.message):
-        session.handoff_status = "waiting"
-        db.add(Message(session_id=session.id, role="assistant", content=HANDOFF_HOLD_REPLY))
-        await db.commit()
-        return ChatResponse(
-            session_id=session.id,
-            message_id=0,
-            response=HANDOFF_HOLD_REPLY,
-            needs_human=True,
-            route={"intent": "human_handoff", "action": "human_handoff", "slots": {}, "reason_code": "human_handoff_keyword"},
-        )
-
-    url = settings.agent_service_url.strip().rstrip("/") + "/api/v1/chat"
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.post(
-                url,
-                json={"message": payload.message, "session_id": session.id},
-            )
-            resp.raise_for_status()
-            data = resp.json()
-    except Exception as exc:
-        db.add(
-            Message(
-                session_id=session.id,
-                role="assistant",
-                content=f"（AI 客服服务暂不可用：{exc}）",
-            )
-        )
-        await db.commit()
-        return ChatResponse(
-            session_id=session.id,
-            message_id=0,
-            response=f"（AI 客服服务暂不可用，请稍后再试）",
-            route={"intent": "agent_unavailable", "action": "fallback", "slots": {}, "reason_code": "agent_down"},
-        )
-    reply = data.get("response") or "抱歉，我没有理解你的问题，请换个说法～"
-    citations = data.get("citations") or []
-    cards = []
-    db.add(
-        Message(
-            session_id=session.id,
-            role="assistant",
-            content=reply,
-            citations_json=json.dumps(citations, ensure_ascii=False),
-        )
-    )
-    await db.commit()
-    return ChatResponse(
-        session_id=session.id,
-        message_id=0,
-        response=reply,
-        citations=citations,
-        product_cards=cards,
-        route={"intent": data.get("intent") or "agent", "action": "agent_reply", "slots": {}, "reason_code": "agent_service"},
-    )
-
-
 async def get_or_create_session(
     db: AsyncSession,
     user_id: int,
@@ -178,9 +84,6 @@ async def chat(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ChatResponse:
-    # 若配置了独立 AI 客服服务（agent），转发到 agent 处理，商城只做会话与消息落库
-    if settings.agent_service_url.strip():
-        return await _chat_via_agent(payload, user, db)
     session = await get_or_create_session(db, user.id, payload.session_id)
     _maybe_title_session(session, payload.message)
     # 先落库用户消息（此时尚未进图）

@@ -6,8 +6,6 @@ server/*.db
 server/uploads/
 server/.env
 .env
-agent/__pycache__/
-agent/**/__pycache__/
 node_modules/
 .DS_Store
 *.pyc

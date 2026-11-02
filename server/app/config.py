@@ -12,9 +12,6 @@ class Settings(BaseSettings):
     env: str = "development"
     secret_key: str = "please-change-me-to-a-long-random-string"
     jwt_expire_minutes: int = 480
-    agent_service_url: str = ""
-    # 内部服务令牌：供 agent 等内部服务调用 /internal/* 接口
-    service_token: str = ""
     # 限流与信任主机（生产建议显式配置 ALLOWED_HOSTS）
     rate_limit_enabled: bool = True
     rate_limit_per_minute: int = 180

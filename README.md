@@ -2,17 +2,16 @@
 
 微信小程序商城 + FastAPI 后端 + Vue3 管理后台 + AI 智能客服，四端一体。
 
-## 目录结构（四个主目录）
+## 目录结构（三个主目录）
 
 ```
 wx/       微信小程序端（TypeScript 基础模板，微信开发者工具导入）
-server/   FastAPI 商城后端（商品 / 订单 / 支付沙箱 / 履约 / 客服接口）
+server/   FastAPI 商城后端（商品 / 订单 / 支付沙箱 / 履约 / AI 客服）
 client/   Vue3 管理后台（商品管理、订单管理：发货 / 退款）
-agent/    独立 AI 智能客服服务（知识库 RAG + LLM，端口 8100）
 ```
 
 ```
-wx（微信小程序）──▶ server（商城后端 /chat）──转发（可选）──▶ agent（AI 客服）
+wx（微信小程序）──▶ server（商城后端，AI 客服为内置 LangGraph 编排）
 client（Vue 管理后台）──────┘
 ```
 
@@ -21,27 +20,23 @@ client（Vue 管理后台）──────┘
 | 端 | 技术 |
 |---|---|
 | wx | 微信原生小程序 + TypeScript（wx.login 微信官方登录，沙箱微信支付） |
-| server | Python 3.12 + FastAPI + SQLAlchemy（SQLite 本机 / MySQL 8 生产） |
+| server | Python 3.12 + FastAPI + SQLAlchemy（SQLite 本机 / MySQL 8 生产），内置 LangGraph AI 客服 |
 | client | Vue 3（Composition API，零构建，本地化运行时离线可用） |
-| agent | FastAPI 独立服务 + 知识库检索（BM25）+ DeepSeek（默认 mock 本地演示） |
 
 ## 快速启动
 
 ```bash
-# 1. 商城后端（端口 8000）
+# 1. 商城后端（端口 8000，内含 AI 智能客服）
 cd server && python -m uvicorn app.main:app --port 8000
 
-# 2. AI 客服（端口 8100，可选；配 AGENT_SERVICE_URL 后小程序客服由 agent 接管）
-cd agent && python -m uvicorn app:app --port 8100
-
-# 3. Vue 管理后台（端口 3000）
+# 2. Vue 管理后台（端口 3000）
 cd client && python -m http.server 3000
 # 浏览器打开 http://localhost:3000，账号 admin / Admin@123456（staff / Staff@123456）
 
-# 4. 小程序：微信开发者工具导入 wx/ 目录（TS 编译已启用；本地调试勾选"不校验合法域名"）
+# 3. 小程序：微信开发者工具导入 wx/ 目录（TS 编译已启用；本地调试勾选“不校验合法域名”）
 ```
 
-Windows 一键脚本：`启动后端.bat`、`启动客服.bat`、`client/启动管理后台.bat`。
+Windows 一键脚本：`启动后端.bat`、`client/启动管理后台.bat`。
 
 ## 功能清单
 
@@ -53,9 +48,9 @@ Windows 一键脚本：`启动后端.bat`、`启动客服.bat`、`client/启动�
   管理端接口（商品 CRUD、订单列表、发货、退款）、聊天会话 / 转人工 / 记忆 / RAG。
 - **管理后台（client）**：商品管理（增删改查、上下架、封面上传、SKU）、
   订单管理（状态筛选、发货填物流、退款回补库存）、客服配置说明页。
-- **AI 客服（agent）**：意图识别（商品 / 订单 / 物流 / 售后 / 支付 / 问候）、
-  知识库关键词检索 + LLM 生成、引用来源、会话保持；`LLM_PROVIDER=mock` 本地可跑，
-  配 `LLM_API_KEY` 即切换 DeepSeek。
+- **AI 智能客服（内置）**：意图识别（商品 / 订单 / 物流 / 售后 / 库存 / 投诉 / 转人工）、
+  RAG 接地校验、商品推荐卡、长期记忆、人工坐席接管；知识库向量检索 + LLM 生成，
+  `LLM_PROVIDER=mock` 本地可跑（规则模式），配 `LLM_API_KEY` 即切换 DeepSeek。
 
 ## 支付（模拟）
 
@@ -75,7 +70,6 @@ Windows 一键脚本：`启动后端.bat`、`启动客服.bat`、`client/启动�
 
 ```bash
 cd server && python -m pytest tests -q      # 支付 / 履约 / 钱包 / 推荐等（关键链路全绿）
-cd agent && python -m pytest tests -q       # 知识库检索 / 意图识别 / chat 接口
 cd wx && npx tsc -p tsconfig.json --noEmit  # 小程序 TypeScript 类型检查
 ```
 
