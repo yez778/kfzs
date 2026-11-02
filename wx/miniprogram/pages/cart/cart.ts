@@ -23,7 +23,7 @@ Page({
   refreshCart() {
     const items = ((wx.getStorageSync('cart_items') || []) as ICartItem[]).map((it) => ({
       ...it,
-      cover: app.mediaUrl(it.cover || ''),
+      cover: app.productImage(it.product_id, it.cover || ''),
     }));
     this.setData({
       items,

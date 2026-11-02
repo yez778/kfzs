@@ -1,0 +1,185 @@
+/* 收银台 · 极简（微信支付语义绿 + 品牌橙） */
+.cashier {
+  min-height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部品牌 */
+.cashier-head {
+  background: #ffffff;
+  padding: 40rpx 32rpx 32rpx;
+  display: flex;
+  align-items: center;
+}
+.wx-logo {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 14rpx;
+  background: var(--wxpay-grad);
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 700;
+  text-align: center;
+  line-height: 60rpx;
+  margin-right: 16rpx;
+}
+.merchant {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cashier-body {
+  flex: 1;
+  padding: 24rpx;
+}
+
+/* 金额 */
+.amount-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding: 40rpx 0 8rpx;
+}
+.amount-symbol {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+.amount {
+  font-size: 88rpx;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+.amount-tip {
+  text-align: center;
+  color: var(--muted);
+  font-size: 24rpx;
+  margin-bottom: 28rpx;
+}
+
+/* 订单信息 */
+.order-info {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 8rpx 28rpx;
+  margin-bottom: 28rpx;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid var(--line);
+}
+.info-row:last-child { border-bottom: none; }
+.info-label {
+  color: var(--muted);
+  font-size: 26rpx;
+  flex-shrink: 0;
+  margin-right: 24rpx;
+}
+.info-value {
+  color: var(--text-2);
+  font-size: 26rpx;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* 结果视图 */
+.result-view {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 70rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.result-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  font-size: 70rpx;
+  color: #fff;
+  text-align: center;
+  line-height: 120rpx;
+  margin-bottom: 28rpx;
+}
+.result-icon.ok { background: var(--wxpay-grad); }
+.result-icon.fail { background: var(--danger); }
+.result-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+.result-sub {
+  font-size: 25rpx;
+  color: var(--muted);
+  margin-top: 14rpx;
+  text-align: center;
+}
+.recheck-btn { margin-top: 32rpx; }
+.fail-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 32rpx;
+}
+
+/* 加载圈 */
+.spinner {
+  width: 96rpx;
+  height: 96rpx;
+  border: 8rpx solid #eeeeee;
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 28rpx;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 演示/调起区 */
+.demo-zone {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 36rpx 28rpx;
+}
+.demo-title {
+  font-size: 27rpx;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 28rpx;
+}
+.demo-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+}
+.demo-btn {
+  width: 100%;
+}
+.direct-pay {
+  width: 100%;
+  background: var(--wxpay-grad);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8rpx 20rpx rgba(7, 193, 96, 0.28);
+}
+.demo-tip {
+  margin-top: 24rpx;
+  font-size: 22rpx;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* 底部 */
+.cashier-foot {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+}
+.foot-btn {
+  flex: 1;
+}

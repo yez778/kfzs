@@ -30,9 +30,8 @@ Page({
       const detail = await app.request<IProductDetail>(`/shop/products/${encodeURIComponent(id)}`);
       this.setData({
         product: detail,
-        gallery: (detail.gallery && detail.gallery.length ? detail.gallery : [detail.cover]).map(
-          (u) => app.mediaUrl(u)
-        ),
+        // 轮播一律用包内本地图（主图 + 实景图），避免外链 webp 在小程序里空白
+        gallery: app.productGallery(detail.product_id),
         specs: detail.specs || [],
         services: detail.services || [],
         skuIndex: 0,
@@ -90,7 +89,7 @@ Page({
         sku_id: sku ? sku.sku_id : '',
         title: product.title,
         price: sku ? sku.price : product.price,
-        cover: app.mediaUrl(product.cover),
+        cover: app.productImage(product.product_id, product.cover),
         quantity: this.data.quantity,
       });
     }

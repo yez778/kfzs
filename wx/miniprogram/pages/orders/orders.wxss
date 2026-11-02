@@ -1,0 +1,111 @@
+/* 订单列表 · 极简橙 */
+.page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+.order-list {
+  padding: 20rpx 24rpx;
+}
+.order-card {
+  margin-bottom: 20rpx;
+  padding: 26rpx 24rpx;
+}
+
+/* 头部 */
+.order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid var(--line);
+}
+.order-id {
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+/* 商品 */
+.order-goods {
+  padding: 20rpx 0;
+}
+.goods-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 8rpx 0;
+}
+.goods-name {
+  flex: 1;
+  font-size: 27rpx;
+  color: var(--text);
+  line-height: 1.45;
+  margin-right: 20rpx;
+}
+.goods-meta {
+  font-size: 24rpx;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* 物流 / 退款 */
+.track-row {
+  display: flex;
+  align-items: center;
+  background: #f7faf8;
+  border-radius: 10rpx;
+  padding: 16rpx 20rpx;
+  margin: 8rpx 0;
+}
+.track-icon { margin-right: 10rpx; }
+.track-text {
+  font-size: 23rpx;
+  color: var(--ok);
+  word-break: break-all;
+}
+
+/* 底部 */
+.order-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20rpx;
+  border-top: 2rpx solid var(--line);
+}
+.order-amount {
+  font-size: 24rpx;
+  color: var(--text-2);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.order-amount .price {
+  font-size: 34rpx;
+  font-weight: 800;
+  margin: 0 6rpx;
+}
+.order-time {
+  width: 100%;
+  font-size: 21rpx;
+  color: var(--muted);
+  margin-top: 6rpx;
+}
+.order-actions {
+  display: flex;
+  gap: 14rpx;
+  flex-shrink: 0;
+}
+.order-actions .cancel {
+  color: var(--muted);
+  border-color: #dddddd;
+}
+.order-actions .refund-btn {
+  color: var(--text-2);
+  border-color: #dddddd;
+}
+
+/* 未登录空态按钮 */
+.go-btn {
+  margin-top: 36rpx;
+}

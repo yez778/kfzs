@@ -2,6 +2,16 @@
 // 后端 FastAPI：http://localhost:8000/api/v1（真机预览需改为 HTTPS 域名并在小程序后台配置合法域名）
 const API_BASE = 'http://localhost:8000/api/v1';
 
+// 已打进包内的本地商品主图（真 JPEG）。商品封面一律优先用本地图，
+// 彻底绕开后端 cover-proxy 透传的淘系 WebP（小程序 <image> 对 webp 兼容差，常渲染空白），
+// 也不依赖后端是否启动 / localhost 代理 / 外链防盗链。
+const LOCAL_PRODUCT_IMAGES: Record<string, string> = {};
+for (let i = 10009; i <= 10021; i++) {
+  LOCAL_PRODUCT_IMAGES['P' + i] = `/assets/products/P${i}.jpg`;
+}
+// 商品详情轮播通用实景图（本地 JPEG）
+const LOCAL_SCENE_IMAGES = ['/assets/scenes/scene-1.jpg', '/assets/scenes/scene-2.jpg', '/assets/scenes/scene-3.jpg'];
+
 App<IAppOption>({
   globalData: {
     apiBase: API_BASE,
@@ -71,6 +81,19 @@ App<IAppOption>({
       return url;
     }
     return url;
+  },
+
+  // 商品封面：有本地主图就用本地 JPEG，没有再回退网络图（新商品走后端/CDN）
+  productImage(productId: string, cover?: string): string {
+    const local = LOCAL_PRODUCT_IMAGES[productId];
+    if (local) return local;
+    return cover ? this.mediaUrl(cover) : '';
+  },
+
+  // 商品详情轮播：本地主图 + 3 张实景图（全部本地 JPEG，避免外链 webp）
+  productGallery(productId: string): string[] {
+    const main = LOCAL_PRODUCT_IMAGES[productId];
+    return main ? [main, ...LOCAL_SCENE_IMAGES] : LOCAL_SCENE_IMAGES.slice();
   },
 
   isLoggedIn(): boolean {

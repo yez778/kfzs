@@ -1,50 +1,86 @@
-export {};
-// 首页：搜索 + 分类筛选 + 商品瀑布流
+/* ============================================================
+ * 电商首页 · 极简风格
+ * 顶部搜索 / 横向分类导航 / 双列商品网格（flex-wrap）
+ * ============================================================ */
 const app = getApp<IAppOption>();
 
-Page({
+/* ---------- 类型定义 ---------- */
+
+/** 列表接口返回结构（/shop/products） */
+interface IProductsResponse {
+  items: IProductItem[];
+  total: number;
+  page: number;
+  size: number;
+}
+
+/** 商品卡片视图模型：在后端模型上补充展示用字段 */
+interface IProductVM extends IProductItem {
+  /** 销量展示文案，如 "4100" / "1.2万" */
+  sales_text: string;
+}
+
+/** 页面 data 类型 */
+interface IHomeData {
+  keyword: string;
+  categories: ICategoryItem[];
+  activeCategory: string;
+  products: IProductVM[];
+  page: number;
+  size: number;
+  hasMore: boolean;
+  loading: boolean;
+}
+
+/** 内置兜底分类（接口失败时使用） */
+const FALLBACK_CATEGORIES: ICategoryItem[] = [
+  { code: '', name: '全部' },
+  { code: 'post', name: '柱头灯' },
+  { code: 'wall', name: '户外壁灯' },
+  { code: 'solar', name: '太阳能庭院灯' },
+];
+
+/** 内置兜底商品（接口失败时保证页面有内容；封面用包内本地 JPEG） */
+const FALLBACK_PRODUCTS: IProductVM[] = [
+  { product_id: 'P10009', title: '太阳能柱头灯户外防水现代简约LED庭院灯方形围墙灯', subtitle: '', category: '', category_code: 'post', price: 350, original_price: 399, sales_count: 4100, cover: '/assets/products/P10009.jpg', sales_text: '4100' },
+  { product_id: 'P10016', title: '太阳能柱头灯户外防水别墅庭院灯中式围墙门柱氛围景观灯', subtitle: '', category: '', category_code: 'solar', price: 180, original_price: 220, sales_count: 12600, cover: '/assets/products/P10016.jpg', sales_text: '1.2万' },
+  { product_id: 'P10017', title: '现代简约LED壁灯户外防水 IP65 玻璃灯罩 3000K', subtitle: '', category: '', category_code: 'wall', price: 100, original_price: 0, sales_count: 1820, cover: '/assets/products/P10017.jpg', sales_text: '1820' },
+  { product_id: 'P10020', title: '太阳能壁灯户外防水别墅庭院门口灯人体感应壁灯', subtitle: '', category: '', category_code: 'wall', price: 145, original_price: 0, sales_count: 860, cover: '/assets/products/P10020.jpg', sales_text: '860' },
+];
+
+/* ---------- 工具函数 ---------- */
+
+/** 销量格式化：>=10000 显示「x.x万」 */
+function formatSales(n: number): string {
+  if (n >= 10000) return (n / 10000).toFixed(1).replace(/\.0$/, '') + '万';
+  return String(n || 0);
+}
+
+/** 后端商品 -> 卡片视图模型（封面优先包内本地 JPEG + 销量文案） */
+function toViewModel(it: IProductItem): IProductVM {
+  return {
+    ...it,
+    cover: app.productImage(it.product_id, it.cover || ''),
+    sales_text: formatSales(it.sales_count),
+  };
+}
+
+/* ---------- 页面 ---------- */
+
+Page<IHomeData, any>({
   data: {
     keyword: '',
-    categories: [] as ICategoryItem[],
+    categories: [{ code: '', name: '全部' }],
     activeCategory: '',
-    products: [] as IProductItem[],
-    leftCol: [] as IProductItem[],
-    rightCol: [] as IProductItem[],
+    products: [],
     page: 1,
     size: 20,
     hasMore: true,
     loading: false,
-    cartCount: 0,
-    // 首页 Banner（真实灯具图，图中已含文案）
-    bannerImages: [
-      '/assets/banner1.jpg',
-      '/assets/banner2.jpg',
-      '/assets/banner3.jpg',
-    ],
-    bannerIndex: 0,
   },
 
   onLoad() {
     this.loadCategories();
-    this.loadProducts(true);
-    this.refreshCartCount();
-  },
-
-  onShow() {
-    this.refreshCartCount();
-  },
-
-  onBannerChange(e: any) {
-    this.setData({ bannerIndex: Number(e.detail.current) || 0 });
-  },
-
-  // 点 Banner：「AI 客服」那张跳客服，其余跳分类筛选
-  onBannerTap() {
-    if (this.data.bannerIndex === 2) {
-      wx.switchTab({ url: '/pages/chat/chat' });
-      return;
-    }
-    this.setData({ activeCategory: this.data.bannerIndex === 1 ? 'post' : '' });
     this.loadProducts(true);
   },
 
@@ -58,69 +94,27 @@ Page({
     }
   },
 
-  refreshCartCount() {
-    const items = (wx.getStorageSync('cart_items') || []) as ICartItem[];
-    const count = items.reduce((sum, it) => sum + it.quantity, 0);
-    this.setData({ cartCount: count });
-  },
-
+  /* ---------- 分类 ---------- */
   async loadCategories() {
     try {
       const cats = (await app.request<ICategoryItem[]>('/shop/categories')) || [];
-      this.setData({ categories: cats });
+      const list = cats.some((c) => c.code === '')
+        ? cats
+        : [{ code: '', name: '全部' }, ...cats];
+      this.setData({ categories: list });
     } catch {
-      // 分类拉取失败时用内置兜底
-      this.setData({
-        categories: [
-          { code: '', name: '全部' },
-          { code: 'post', name: '柱头灯' },
-          { code: 'wall', name: '户外壁灯' },
-          { code: 'solar', name: '太阳能庭院灯' },
-        ],
-      });
+      this.setData({ categories: FALLBACK_CATEGORIES });
     }
   },
 
-  async loadProducts(reset: boolean) {
-    if (this.data.loading) return;
-    const page = reset ? 1 : this.data.page;
-    this.setData({ loading: true });
-    try {
-      const res = await app.request<{
-        items: IProductItem[];
-        total: number;
-        page: number;
-        size: number;
-      }>(`/shop/products?q=${encodeURIComponent(this.data.keyword)}&category=${encodeURIComponent(this.data.activeCategory)}&page=${page}&size=${this.data.size}`);
-      const items = ((res && res.items) || []).map((it) => ({
-        ...it,
-        cover: app.mediaUrl(it.cover || ''),
-      }));
-      const merged = reset ? items : this.data.products.concat(items);
-      this.setData({
-        products: merged,
-        page: page + 1,
-        hasMore: items.length >= this.data.size,
-      });
-      this.splitColumns();
-    } catch (e: any) {
-      wx.showToast({ title: e.message || '加载失败', icon: 'none' });
-    } finally {
-      this.setData({ loading: false });
-    }
+  onCategoryTap(e: any) {
+    const code = (e.currentTarget.dataset.code as string) || '';
+    if (code === this.data.activeCategory) return;
+    this.setData({ activeCategory: code });
+    this.loadProducts(true);
   },
 
-  // 简单瀑布流：左右两列交替分配
-  splitColumns() {
-    const left: IProductItem[] = [];
-    const right: IProductItem[] = [];
-    this.data.products.forEach((p, i) => {
-      if (i % 2 === 0) left.push(p);
-      else right.push(p);
-    });
-    this.setData({ leftCol: left, rightCol: right });
-  },
-
+  /* ---------- 搜索 ---------- */
   onSearchInput(e: any) {
     this.setData({ keyword: e.detail.value });
   },
@@ -134,40 +128,40 @@ Page({
     this.loadProducts(true);
   },
 
-  onCategoryTap(e: any) {
-    const code = e.currentTarget.dataset.code;
-    this.setData({ activeCategory: code });
-    this.loadProducts(true);
-  },
+  /* ---------- 商品列表 ---------- */
+  async loadProducts(reset: boolean): Promise<void> {
+    if (this.data.loading) return;
+    const page = reset ? 1 : this.data.page;
+    this.setData({ loading: true });
 
-  onProductTap(e: any) {
-    const id = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: `/pages/detail/detail?id=${encodeURIComponent(id)}` });
-  },
+    try {
+      const res = await app.request<IProductsResponse>(
+        `/shop/products?q=${encodeURIComponent(this.data.keyword)}` +
+          `&category=${encodeURIComponent(this.data.activeCategory)}` +
+          `&page=${page}&size=${this.data.size}`
+      );
+      const items = ((res && res.items) || []).map(toViewModel);
+      const products = reset
+        ? items
+        : this.data.products.concat(items);
 
-  addCart(e: any) {
-    const item = this.data.products.find((p) => p.product_id === e.currentTarget.dataset.id);
-    if (!item) return;
-    const items = (wx.getStorageSync('cart_items') || []) as ICartItem[];
-    const found = items.find((it) => it.product_id === item!.product_id);
-    if (found) {
-      found.quantity += 1;
-    } else {
-      items.push({
-        product_id: item.product_id,
-        sku_id: '',
-        title: item.title,
-        price: item.price,
-        cover: item.cover,
-        quantity: 1,
+      this.setData({
+        products,
+        page: page + 1,
+        hasMore: items.length >= this.data.size,
       });
+    } catch (err) {
+      // 离线 / 接口异常：首屏用兜底数据，避免空白
+      if (reset) this.setData({ products: FALLBACK_PRODUCTS, hasMore: false });
+    } finally {
+      this.setData({ loading: false });
     }
-    wx.setStorageSync('cart_items', items);
-    this.refreshCartCount();
-    wx.showToast({ title: '已加入购物车', icon: 'success' });
   },
 
-  goCart() {
-    wx.switchTab({ url: '/pages/cart/cart' });
+  /* ---------- 跳转 ---------- */
+  onProductTap(e: any) {
+    const id = e.currentTarget.dataset.id as string;
+    if (!id) return;
+    wx.navigateTo({ url: `/pages/detail/detail?id=${encodeURIComponent(id)}` });
   },
 });

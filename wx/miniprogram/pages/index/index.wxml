@@ -1,93 +1,80 @@
+<!--
+  电商首页 · 极简风格
+  结构：顶部搜索区 / 横向分类导航 / 双列商品网格
+-->
 <view class="page">
-  <!-- 搜索栏 -->
-  <view class="search-bar">
-    <view class="search-box">
+
+  <!-- ===== 顶部搜索区 ===== -->
+  <view class="header">
+    <view class="search-bar">
       <text class="search-icon">🔍</text>
-      <input class="search-input" placeholder="搜索庭院灯 / 壁灯 / 太阳能…"
-             value="{{keyword}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm"
-             confirm-type="search" />
-      <text wx:if="{{keyword}}" class="search-clear" bindtap="onClearSearch">✕</text>
-    </view>
-    <view class="cart-btn" bindtap="goCart">
-      <text class="cart-icon">🛒</text>
-      <text wx:if="{{cartCount>0}}" class="cart-badge">{{cartCount}}</text>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="搜索商品"
+        placeholder-class="search-placeholder"
+        confirm-type="search"
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+      />
+      <text wx:if="{{keyword}}" class="search-clear" catchtap="onClearSearch">✕</text>
     </view>
   </view>
 
-  <!-- 轮播 Banner（真实灯具图） -->
-  <swiper class="banner" indicator-dots circular autoplay interval="4000" duration="500"
-          indicator-color="rgba(255,255,255,.45)" indicator-active-color="#ffffff"
-          bindchange="onBannerChange">
-    <swiper-item wx:for="{{bannerImages}}" wx:key="*this">
-      <image class="banner-img" src="{{item}}" mode="aspectFill" bindtap="onBannerTap" />
-    </swiper-item>
-  </swiper>
-
-  <!-- 分类筛选 -->
-  <scroll-view class="cat-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-    <view class="cat-row">
-      <view class="cat-item {{activeCategory===''?'cat-active':''}}"
-            data-code="" bindtap="onCategoryTap">全部</view>
-      <view wx:for="{{categories}}" wx:key="code"
-            class="cat-item {{activeCategory===item.code?'cat-active':''}}"
-            data-code="{{item.code}}" bindtap="onCategoryTap">
-        {{item.name}}
-      </view>
+  <!-- ===== 分类导航（横向滚动） ===== -->
+  <scroll-view class="cat-nav" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="cat-list">
+      <view
+        wx:for="{{categories}}"
+        wx:key="code"
+        class="cat-item {{activeCategory === item.code ? 'cat-item--active' : ''}}"
+        data-code="{{item.code}}"
+        bindtap="onCategoryTap"
+      >{{item.name}}</view>
     </view>
   </scroll-view>
 
-  <!-- 瀑布流 -->
-  <view class="waterfall" wx:if="{{leftCol.length || rightCol.length}}">
-    <view class="wf-col">
-  <view wx:for="{{leftCol}}" wx:key="product_id" class="goods-card card"
-        data-id="{{item.product_id}}" bindtap="onProductTap" hover-class="goods-hover">
-        <view class="goods-img-wrap">
-          <image class="goods-img" src="{{item.cover}}"
-                 mode="widthFix" lazy-load />
-          <view wx:if="{{item.original_price>item.price}}" class="goods-sale">促销</view>
-        </view>
-        <view class="goods-body">
-          <view class="goods-title">{{item.title}}</view>
-          <view class="goods-sub">{{item.subtitle}}</view>
-          <view class="goods-foot">
-            <view class="goods-price">
-              <text class="price">¥{{item.price}}</text>
-              <text wx:if="{{item.original_price>item.price}}" class="price-old">¥{{item.original_price}}</text>
-            </view>
-            <view class="goods-add" catchtap="addCart" data-id="{{item.product_id}}">＋</view>
-          </view>
-        </view>
+  <!-- ===== 商品双列网格（flex-wrap + space-between） ===== -->
+  <view class="goods-grid" wx:if="{{products.length > 0}}">
+    <view
+      wx:for="{{products}}"
+      wx:key="product_id"
+      class="goods-card"
+      data-id="{{item.product_id}}"
+      bindtap="onProductTap"
+      hover-class="goods-card--hover"
+    >
+      <!-- 固定 1:1 比例主图 -->
+      <view class="goods-thumb">
+        <image
+          class="goods-img"
+          src="{{item.cover}}"
+          mode="aspectFill"
+          lazy-load
+        />
       </view>
-    </view>
-    <view class="wf-col">
-  <view wx:for="{{rightCol}}" wx:key="product_id" class="goods-card card"
-        data-id="{{item.product_id}}" bindtap="onProductTap" hover-class="goods-hover">
-        <view class="goods-img-wrap">
-          <image class="goods-img" src="{{item.cover}}"
-                 mode="widthFix" lazy-load />
-          <view wx:if="{{item.original_price>item.price}}" class="goods-sale">促销</view>
-        </view>
-        <view class="goods-body">
-          <view class="goods-title">{{item.title}}</view>
-          <view class="goods-sub">{{item.subtitle}}</view>
-          <view class="goods-foot">
-            <view class="goods-price">
-              <text class="price">¥{{item.price}}</text>
-              <text wx:if="{{item.original_price>item.price}}" class="price-old">¥{{item.original_price}}</text>
-            </view>
-            <view class="goods-add" catchtap="addCart" data-id="{{item.product_id}}">＋</view>
-          </view>
+
+      <view class="goods-info">
+        <!-- 标题：加粗，最多两行，超出省略 -->
+        <view class="goods-title">{{item.title}}</view>
+
+        <!-- 价格 / 销量：两端对齐 -->
+        <view class="goods-bottom">
+          <text class="goods-price">¥{{item.price}}</text>
+          <text class="goods-sales">已售 {{item.sales_text}}</text>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 空态 -->
-  <view class="empty" wx:if="{{!loading && !leftCol.length && !rightCol.length}}">
-    <text class="empty-icon">🛋</text>
-    <text>暂无商品</text>
+  <!-- ===== 空态 / 加载态 ===== -->
+  <view class="empty" wx:if="{{!loading && products.length === 0}}">
+    <text class="empty-icon">🛍</text>
+    <text class="empty-text">暂无相关商品</text>
   </view>
 
   <view class="loading-more" wx:if="{{loading}}">加载中…</view>
-  <view class="loading-more" wx:elif="{{!hasMore && (leftCol.length || rightCol.length)}}">— 没有更多了 —</view>
+  <view class="loading-more" wx:elif="{{!hasMore && products.length > 0}}">— 没有更多了 —</view>
+
 </view>

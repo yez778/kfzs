@@ -122,7 +122,7 @@ Page({
             '\n原因：' +
             reason,
           confirmText: '确认提交',
-          confirmColor: '#1e5eff',
+          confirmColor: '#ff6a00',
           success: (res) => resolve(!!res.confirm),
           fail: () => resolve(false),
         });

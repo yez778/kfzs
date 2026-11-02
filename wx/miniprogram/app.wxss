@@ -1,0 +1,178 @@
+/* ============================================================
+   全局设计系统 · 极简橙（原生 WXSS，无需 less 编译插件）
+   主色 橙 #ff6a00 ｜ 背景 #f5f5f5 ｜ 卡片白 ｜ 价格橙红
+   ============================================================ */
+
+page {
+  --brand: #ff6a00;
+  --brand-deep: #f05d00;
+  --brand-light: #ff8a3d;
+  --brand-bg: #fff3ea;
+  --brand-grad: linear-gradient(135deg, #ff8a3d 0%, #ff6a00 60%, #f05500 100%);
+  --wxpay: #07c160;
+  --wxpay-grad: linear-gradient(135deg, #06ad56 0%, #07c160 60%, #2cd17c 100%);
+  --danger: #ff4d4f;
+  --warn: #ff9500;
+  --ok: #07b96b;
+  --text: #222222;
+  --text-2: #555555;
+  --muted: #999999;
+  --line: #eeeeee;
+  --bg: #f5f5f5;
+  --card-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+
+  background: #f5f5f5;
+  font-size: 28rpx;
+  color: #222222;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 卡片 ===== */
+.card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+}
+
+/* ===== 价格 ===== */
+.price {
+  color: #ff5000;
+  font-weight: 700;
+}
+.price-old {
+  color: #b0b0b0;
+  text-decoration: line-through;
+  font-size: 24rpx;
+  margin-left: 10rpx;
+  font-weight: 400;
+}
+
+/* ===== 按钮 ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  padding: 0 40rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  box-sizing: border-box;
+  border: none;
+}
+.btn::after { border: none; }
+.btn[disabled] { opacity: 0.55; }
+
+.btn-primary {
+  background: var(--brand-grad);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8rpx 20rpx rgba(255, 106, 0, 0.28);
+}
+.btn-ghost {
+  background: #ffffff;
+  color: var(--brand);
+  border: 2rpx solid var(--brand);
+}
+.btn-danger {
+  background: #ffffff;
+  color: var(--danger);
+  border: 2rpx solid var(--danger);
+}
+.btn-mini {
+  height: 56rpx;
+  line-height: 56rpx;
+  font-size: 24rpx;
+  padding: 0 26rpx;
+}
+
+/* ===== 状态标签 ===== */
+.status-tag {
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+.status-unpaid { background: #fff3ea; color: var(--brand); }
+.status-paid { background: #fff3ea; color: var(--brand); }
+.status-shipped { background: #e9f7ef; color: var(--ok); }
+.status-completed { background: #f2f2f2; color: #777777; }
+.status-refunded { background: #fdeef0; color: var(--danger); }
+.status-cancelled { background: #f2f2f2; color: var(--muted); }
+
+/* ===== 空态 ===== */
+.empty {
+  padding: 140rpx 40rpx;
+  text-align: center;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.empty-icon {
+  font-size: 96rpx;
+  margin-bottom: 20rpx;
+}
+
+/* ===== 加载态 ===== */
+.loading-more, .loading-bar {
+  text-align: center;
+  color: var(--muted);
+  font-size: 24rpx;
+  padding: 24rpx 0;
+}
+
+/* ===== 表单 ===== */
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  background: #ffffff;
+  border-bottom: 2rpx solid var(--line);
+}
+.form-item:last-child { border-bottom: none; }
+.form-item .label {
+  width: 150rpx;
+  color: var(--text-2);
+  flex-shrink: 0;
+  font-size: 28rpx;
+}
+.form-item input,
+.form-item textarea {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+/* ===== 步进器 ===== */
+.stepper {
+  display: flex;
+  align-items: center;
+}
+.step-btn {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 44rpx;
+  text-align: center;
+  border: 2rpx solid #e3e3e3;
+  border-radius: 8rpx;
+  font-size: 30rpx;
+  color: var(--text-2);
+  background: #ffffff;
+}
+.step-btn.plus {
+  color: var(--brand);
+  border-color: var(--brand);
+  background: var(--brand-bg);
+}
+.step-num {
+  width: 68rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* ===== 等宽字体（订单号等） ===== */
+.mono {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}

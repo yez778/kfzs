@@ -11,15 +11,15 @@
     "pages/mine/mine"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#1e5eff",
+    "navigationBarBackgroundColor": "#ff6a00",
     "navigationBarTextStyle": "white",
     "navigationBarTitleText": "星途户外照明",
-    "backgroundColor": "#f5f6fa",
+    "backgroundColor": "#f5f5f5",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
-    "color": "#9aa3b5",
-    "selectedColor": "#1e5eff",
+    "color": "#999999",
+    "selectedColor": "#ff6a00",
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [

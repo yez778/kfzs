@@ -1,0 +1,123 @@
+/* 客服会话历史 · 极简橙 */
+.page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* 顶栏 */
+.h-top {
+  background: var(--brand-grad);
+  padding: 30rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.h-title {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.h-actions {
+  display: flex;
+  gap: 14rpx;
+}
+.h-btn {
+  font-size: 23rpx;
+  color: #fff;
+  border: 2rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 30rpx;
+  padding: 8rpx 20rpx;
+}
+
+/* 列表 */
+.list {
+  padding: 20rpx 24rpx;
+}
+.s-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 26rpx 24rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+.s-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: var(--brand-bg);
+  font-size: 42rpx;
+  text-align: center;
+  line-height: 80rpx;
+  flex-shrink: 0;
+}
+.s-body {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+}
+.s-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.s-title {
+  font-size: 29rpx;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 16rpx;
+}
+.s-time {
+  font-size: 21rpx;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.s-last {
+  margin-top: 8rpx;
+  font-size: 25rpx;
+  color: var(--text-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.s-meta {
+  margin-top: 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.s-count {
+  font-size: 21rpx;
+  color: var(--muted);
+}
+.s-handoff {
+  font-size: 21rpx;
+  color: var(--warn);
+  background: #fff7e6;
+  border-radius: 6rpx;
+  padding: 2rpx 12rpx;
+}
+.s-handoff.active {
+  color: var(--brand);
+  background: var(--brand-bg);
+}
+.s-del {
+  position: absolute;
+  top: 14rpx;
+  right: 16rpx;
+  color: #c5c5c5;
+  font-size: 26rpx;
+  padding: 6rpx;
+}
+
+.empty-btn { margin-top: 36rpx; }
+
+.foot-tip {
+  text-align: center;
+  font-size: 21rpx;
+  color: var(--muted);
+  margin-top: 20rpx;
+  padding: 0 40rpx;
+}

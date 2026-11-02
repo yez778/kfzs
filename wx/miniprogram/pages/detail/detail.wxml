@@ -7,7 +7,7 @@
   <block wx:elif="{{product}}">
     <!-- 轮播大图 -->
     <swiper class="gallery" indicator-dots circular autoplay interval="4000"
-            indicator-active-color="#1e5eff">
+            indicator-active-color="#ff6a00">
       <swiper-item wx:for="{{gallery}}" wx:key="*this">
         <image class="gallery-img" src="{{item}}" mode="aspectFill"
                bindtap="onPreview" data-src="{{item}}" />

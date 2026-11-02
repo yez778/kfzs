@@ -17,6 +17,10 @@ interface IAppOption {
   request<T>(path: string, options?: IRequestOptions): Promise<T>;
   /** 商品图片地址转绝对地址（相对路径拼 apiBase） */
   mediaUrl(url: string): string;
+  /** 商品封面：优先用包内本地 JPEG 主图，避免外链 webp 不渲染 */
+  productImage(productId: string, cover?: string): string;
+  /** 商品详情轮播图：本地主图 + 实景图 */
+  productGallery(productId: string): string[];
   /** 登录态是否有效 */
   isLoggedIn(): boolean;
   /** 保存登录态（token + 用户信息） */
