@@ -5,237 +5,184 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>星途商城 · 小程序视觉预览</title>
 <style>
-:root {
-  --brand: #1e5eff;
-  --brand-light: #4f8bff;
-  --grad: linear-gradient(135deg, #1e5eff 0%, #4f8bff 60%, #6aa8ff 100%);
-  --danger: #e5484d;
-  --warn: #d97706;
-  --ok: #07b96b;
-  --text: #23273a;
-  --muted: #9aa3b5;
+:root{
+  --brand:#ff6a00;--brand-deep:#f05500;--brand-light:#ff8a3d;--brand-bg:#fff3ea;
+  --g-brand:linear-gradient(135deg,#ff8a3d,#ff6a00 60%,#f05500);
+  --wx:#07c160;--g-wx:linear-gradient(135deg,#06ad56,#2cd17c);
+  --danger:#ff4d4f;--price:#ff5000;--warn:#ff9500;--ok:#07b96b;
+  --text:#222;--text2:#555;--muted:#999;--line:#eee;--bg:#f5f5f5;
+  --sh:0 2px 8px rgba(0,0,0,.05);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: radial-gradient(1200px 500px at 80% -10%, rgba(47,107,255,.25), transparent 60%),
-              radial-gradient(900px 420px at 0% 110%, rgba(106,168,255,.2), transparent 55%),
-              #0e1a33;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 34px 16px 60px;
-  color: var(--text);
-}
-.preview-head { text-align: center; margin-bottom: 26px; color: #fff; }
-.preview-head .logo-row { display: inline-flex; align-items: center; gap: 12px; }
-.preview-head .logo-img { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 8px 22px rgba(30,94,255,.5); }
-.preview-head h1 { font-size: 25px; font-weight: 700; letter-spacing: 2px; }
-.preview-head p { color: #8aa2d8; font-size: 13px; margin-top: 8px; }
-.page-tabs { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center; }
-.page-tab {
-  padding: 9px 22px; border-radius: 24px; background: rgba(255,255,255,.1);
-  color: #c7d5f5; font-size: 14px; cursor: pointer; border: 1px solid transparent;
-  transition: all .2s;
-}
-.page-tab.active { background: var(--grad); color: #fff; font-weight: 600; box-shadow: 0 8px 22px rgba(30,94,255,.4); }
-.stage { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-
-/* 手机壳 */
-.phone {
-  width: 390px; border-radius: 44px; background: #1a2440; padding: 12px;
-  box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 2px #2a3760;
-}
-.phone-screen {
-  width: 100%; height: 760px; border-radius: 34px; overflow: hidden;
-  background: #f5f7fd; position: relative;
-}
-.phone-notch {
-  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-  width: 130px; height: 26px; background: #1a2440; border-radius: 18px; z-index: 60;
-}
-.screen {
-  height: 100%; overflow-y: auto; position: relative; background: #f5f7fd;
-  padding-bottom: 110px;
-}
-.screen::-webkit-scrollbar { display: none; }
-
-/* tabBar */
-.tabbar {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 64px;
-  background: #fff; border-top: 1px solid #f1f2f6;
-  display: flex; align-items: center; padding-bottom: env(safe-area-inset-bottom);
-  z-index: 50;
-}
-.tab-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; font-size: 10px; color: #9aa3b5; cursor: pointer;
-}
-.tab-item .tab-icon {
-  width: 26px; height: 26px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center; font-size: 17px;
-}
-.tab-item.on { color: var(--brand); font-weight: 600; }
-.tab-item.on .tab-icon { background: #eef3ff; }
-
-/* ===== 通用 ===== */
-.card { background: #fff; border-radius: 16px; box-shadow: 0 6px 22px rgba(31,45,90,.08); }
-.price { color: var(--danger); font-weight: 700; }
-.price-old { color: var(--muted); text-decoration: line-through; font-size: 12px; margin-left: 6px; }
-
-/* ===== 首页 ===== */
-.search-bar { display: flex; align-items: center; padding: 14px 14px; background: var(--grad); position: sticky; top: 0; z-index: 40; }
-.search-box { flex: 1; display: flex; align-items: center; background: #fff; border-radius: 22px; height: 36px; padding: 0 14px; font-size: 13px; color: var(--muted); }
-.search-box span { margin-right: 8px; }
-.cart-btn { position: relative; margin-left: 12px; width: 38px; height: 38px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-.badge-num { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; line-height: 17px; background: var(--danger); color: #fff; border-radius: 9px; font-size: 11px; text-align: center; padding: 0 4px; }
-
-.banner { height: 160px; margin: 12px 14px 0; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 10px 26px rgba(31,45,90,.16); }
-.banner img.bg { width: 100%; height: 100%; object-fit: cover; }
-.banner-fade { opacity: 0; transition: opacity .45s ease; }
-.banner img.bg { opacity: 1; transition: opacity .45s ease; }
-.banner-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
-.banner-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.5); }
-.banner-dots i.on { width: 16px; background: #fff; }
-
-.cat-bar { display: flex; gap: 8px; padding: 12px 14px 4px; overflow-x: auto; }
-.cat-bar::-webkit-scrollbar { display: none; }
-.cat-item { padding: 7px 16px; border-radius: 18px; background: #f1f2f6; font-size: 13px; color: #555f72; white-space: nowrap; }
-.cat-item.on { background: var(--brand); color: #fff; font-weight: 500; box-shadow: 0 4px 12px rgba(30,94,255,.3); }
-
-.waterfall { display: flex; padding: 14px 8px 0; }
-.wf-col { flex: 1; padding: 0 6px; }
-.goods { margin-bottom: 12px; background: #fff; border-radius: 16px; box-shadow: 0 6px 22px rgba(31,45,90,.08); overflow: hidden; transition: transform .15s; cursor: pointer; }
-.goods:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(31,45,90,.14); }
-.goods-img { position: relative; height: 170px; background: #eef3ff; }
-.goods-img img { width: 100%; height: 100%; object-fit: cover; }
-.goods-sale { position: absolute; top: 8px; left: 8px; font-size: 10px; color: #fff; background: linear-gradient(135deg,#e5484d,#f0716f); border-radius: 9px; padding: 2px 9px; box-shadow: 0 4px 10px rgba(229,72,77,.35); }
-.goods-body { padding: 10px 12px 12px; }
-.goods-title { font-size: 13px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 38px; }
-.goods-sub { font-size: 11px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.goods-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-.goods-add { width: 26px; height: 26px; border-radius: 50%; background: var(--grad); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 10px rgba(30,94,255,.3); }
-.goods-sale-num { font-size: 10px; color: var(--muted); }
-
-/* ===== 详情 ===== */
-.detail-swiper { height: 270px; position: relative; background: #eef3ff; }
-.detail-swiper img.main { width: 100%; height: 100%; object-fit: cover; }
-.detail-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
-.detail-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(0,0,0,.25); }
-.detail-dots i.on { width: 14px; background: var(--brand); }
-.detail-thumbs { display: flex; gap: 8px; padding: 0 14px; margin-top: 10px; }
-.detail-thumbs img {
-  width: 58px; height: 58px; border-radius: 10px; object-fit: cover;
-  border: 2px solid transparent; cursor: pointer; background: #eef3ff;
-}
-.detail-thumbs img.on { border-color: var(--brand); }
-.detail-info { padding: 16px; }
-.detail-price { font-size: 26px; font-weight: 800; background: linear-gradient(90deg,#e5484d,#f0716f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.service-bar { margin: 10px 14px; padding: 10px 14px; display: flex; gap: 14px; font-size: 11px; color: var(--ok); background: linear-gradient(135deg,#f2fbf5,#e9f7ef); border-radius: 14px; }
-.sec { margin: 10px 14px; padding: 14px; }
-.sec-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
-.sku-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.sku-item { padding: 7px 18px; border: 1.5px solid #e3e6ee; border-radius: 16px; font-size: 13px; color: #555f72; }
-.sku-item.on { border-color: var(--brand); color: var(--brand); background: #eef3ff; font-weight: 500; }
-.qty-row { display: flex; align-items: center; justify-content: space-between; }
-.stepper { display: flex; align-items: center; }
-.step { width: 28px; height: 28px; line-height: 26px; text-align: center; border: 1.5px solid #e3e6ee; border-radius: 7px; font-size: 16px; color: #555f72; background: #fff; }
-.step.plus { color: var(--brand); border-color: var(--brand); background: #eef3ff; }
-.step-num { width: 40px; text-align: center; font-weight: 600; }
-.action-bar { position: absolute; left: 0; right: 0; bottom: 64px; display: flex; align-items: center; padding: 10px 14px; background: #fff; box-shadow: 0 -4px 16px rgba(31,45,90,.08); }
-.action-cart { width: 90px; text-align: center; font-size: 10px; color: #555f72; }
-.action-cart i { display: block; font-size: 20px; font-style: normal; }
-.buy-btn { flex: 1; height: 44px; line-height: 44px; text-align: center; color: #fff; background: var(--grad); border-radius: 22px; font-size: 15px; margin-left: 12px; box-shadow: 0 8px 18px rgba(30,94,255,.3); }
-
-/* ===== 我的 ===== */
-.mine-hero { background: var(--grad); padding: 30px 20px; border-radius: 0 0 28px 28px; position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; }
-.mine-hero::after { content:''; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%; background: rgba(255,255,255,.1); }
-.mine-avatar { width: 58px; height: 58px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,.6); background: #fff; flex-shrink: 0; }
-.mine-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.mine-name { color: #fff; font-size: 17px; font-weight: 600; }
-.mine-role { display: inline-block; margin-top: 5px; font-size: 10px; color: var(--brand); background: #fff; border-radius: 12px; padding: 2px 10px; font-weight: 600; box-shadow: 0 4px 10px rgba(20,40,90,.15); }
-.mine-wallet { margin-left: auto; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.25); border-radius: 12px; padding: 8px 14px; text-align: right; }
-.mine-wallet .l { font-size: 10px; color: rgba(255,255,255,.75); }
-.mine-wallet .v { color: #fff; font-size: 18px; font-weight: 700; }
-.mine-menu { margin: 14px; }
-.mine-item { display: flex; align-items: center; padding: 14px; border-bottom: 1px solid #f5f6fa; cursor: pointer; transition: background .15s; }
-.mine-item:hover { background: #f6f9ff; }
-.mine-item:last-child { border-bottom: none; }
-.mine-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; margin-right: 12px; }
-.mine-item:nth-child(1) .mine-icon { background: linear-gradient(135deg,#e9f7ef,#d5f3e2); }
-.mine-item:nth-child(2) .mine-icon { background: linear-gradient(135deg,#eef3ff,#dce8ff); }
-.mine-item:nth-child(3) .mine-icon { background: linear-gradient(135deg,#fff7e8,#ffe9c7); }
-.mine-item:nth-child(4) .mine-icon { background: linear-gradient(135deg,#f3f0ff,#e4ddff); }
-.mine-text { flex: 1; font-size: 14px; font-weight: 500; }
-.mine-arrow { color: #c3c8d4; font-size: 18px; }
-.mine-logout { margin: 14px; height: 44px; line-height: 44px; text-align: center; color: var(--danger); border: 1.5px solid var(--danger); border-radius: 22px; font-size: 14px; cursor: pointer; }
-
-/* ===== 客服 ===== */
-.chat-top { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--grad); color: #fff; }
-.chat-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; }
-.chat-logo { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-.chat-logo img { width: 100%; height: 100%; object-fit: cover; }
-.chat-actions { display: flex; gap: 8px; }
-.chat-btn { font-size: 11px; color: #fff; border: 1px solid rgba(255,255,255,.6); border-radius: 14px; padding: 4px 12px; }
-.chat-list { padding: 14px; }
-.msg { display: flex; margin-bottom: 14px; }
-.msg.assistant { justify-content: flex-start; }
-.msg.user { justify-content: flex-end; }
-.msg-avatar { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: #eef3ff; margin-right: 8px; flex-shrink: 0; }
-.msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.msg-bubble { max-width: 76%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; }
-.assistant .msg-bubble { background: #fff; box-shadow: 0 4px 14px rgba(31,45,90,.06); }
-.user .msg-bubble { background: var(--grad); color: #fff; }
-.card-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-.card-mini { width: 47%; background: #f0f4ff; border: 1px solid #dbe6ff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }
-.card-mini .t { font-size: 11px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.card-mini .p { font-size: 12px; color: var(--danger); font-weight: 600; margin-top: 3px; }
-.cite { margin-top: 8px; border-top: 1px dashed #e3e6ee; padding-top: 6px; font-size: 10px; color: var(--brand); }
-.chat-input-bar { position: absolute; left: 0; right: 0; bottom: 64px; display: flex; align-items: center; padding: 10px 14px; background: #fff; border-top: 1px solid #f1f2f6; }
-.chat-input { flex: 1; height: 38px; background: #f5f6fa; border-radius: 19px; padding: 0 16px; font-size: 13px; color: var(--muted); display: flex; align-items: center; }
-.send-btn { width: 64px; height: 38px; line-height: 38px; text-align: center; margin-left: 10px; background: var(--grad); color: #fff; border-radius: 19px; font-size: 13px; }
-
-/* ===== 订单 ===== */
-.order-head { display: flex; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid #f5f6fa; font-size: 11px; color: var(--muted); }
-.status-tag { font-size: 10px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
-.st-paid { background: #eef3ff; color: var(--brand); }
-.st-shipped { background: #e9f7ef; color: var(--ok); }
-.st-unpaid { background: #fff7e8; color: var(--warn); }
-.st-refunded { background: #fdeef0; color: var(--danger); }
-.st-completed { background: #f1f2f6; color: #6b7c88; }
-.order-goods { padding: 10px 14px; }
-.goods-line { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f5f6fa; font-size: 12px; }
-.goods-line:last-child { border-bottom: none; }
-.goods-line .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; }
-.goods-line .thumb { width: 46px; height: 46px; border-radius: 8px; overflow: hidden; margin-right: 10px; flex-shrink: 0; }
-.goods-line .thumb img { width: 100%; height: 100%; object-fit: cover; }
-.track { padding: 8px 14px; font-size: 11px; color: var(--ok); background: #f0faf4; border-top: 1px solid #e3f3ea; border-bottom: 1px solid #e3f3ea; }
-.order-foot { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; }
-.order-actions { display: flex; gap: 8px; }
-.mini-btn { padding: 6px 16px; border-radius: 16px; font-size: 12px; }
-.mb-ghost { color: var(--brand); border: 1px solid var(--brand); }
-.mb-primary { color: #fff; background: var(--grad); }
-.mb-cancel { color: var(--muted); border: 1px solid #e3e6ee; }
-
-/* ===== 提示 ===== */
-.tips { max-width: 320px; color: #9db4e0; font-size: 13px; line-height: 1.9; }
-.tips b { color: #fff; }
-.tips code { background: rgba(255,255,255,.12); padding: 1px 6px; border-radius: 5px; font-size: 12px; }
-.tips .img-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.tips .img-list img { width: 74px; height: 74px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,.15); }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:radial-gradient(900px 420px at 85% -10%,rgba(255,106,0,.18),transparent 60%),#e9ebf0;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px 64px;color:var(--text);}
+.preview-head{text-align:center;margin-bottom:22px;}
+.logo-row{display:inline-flex;align-items:center;gap:12px;}
+.logo-img{width:44px;height:44px;border-radius:12px;box-shadow:0 8px 20px rgba(255,106,0,.4);}
+.preview-head h1{font-size:24px;font-weight:800;letter-spacing:1px;}
+.preview-head p{color:#8a8f9c;font-size:13px;margin-top:7px;}
+.page-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;justify-content:center;}
+.page-tab{padding:8px 20px;border-radius:20px;background:#fff;color:#666;font-size:13px;cursor:pointer;border:1px solid #e3e5ea;box-shadow:var(--sh);transition:all .18s;}
+.page-tab.active{background:var(--g-brand);color:#fff;font-weight:700;border-color:transparent;box-shadow:0 8px 20px rgba(255,106,0,.35);}
+.stage{display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+.phone{width:390px;border-radius:46px;background:#1d1d22;padding:12px;box-shadow:0 34px 90px rgba(40,40,60,.4),0 0 0 2px #34343c;}
+.phone-screen{width:100%;height:780px;border-radius:36px;overflow:hidden;background:var(--bg);position:relative;}
+.phone-notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:128px;height:25px;background:#101014;border-radius:16px;z-index:80;}
+.screen{height:100%;overflow-y:auto;position:relative;background:var(--bg);padding-bottom:70px;}
+.screen::-webkit-scrollbar{display:none;}
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;z-index:70;}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:#999;cursor:pointer;}
+.tab-icon{font-size:19px;filter:grayscale(1);opacity:.75;}
+.tab-item.on{color:var(--brand);font-weight:700;}
+.tab-item.on .tab-icon{filter:none;opacity:1;}
+.card{background:#fff;border-radius:8px;box-shadow:var(--sh);}
+.price{color:var(--price);font-weight:800;}
+.price-old{color:#b0b0b0;text-decoration:line-through;font-size:11px;margin-left:6px;font-weight:400;}
+.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:22px;font-size:14px;padding:0 20px;height:40px;line-height:38px;border:none;cursor:pointer;}
+.btn-primary{background:var(--g-brand);color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(255,106,0,.28);}
+.btn-ghost{background:#fff;color:var(--brand);border:1px solid var(--brand);}
+.btn-danger{background:#fff;color:var(--danger);border:1px solid var(--danger);}
+.btn-mini{height:28px;line-height:26px;font-size:12px;padding:0 14px;border-radius:14px;}
+.btn[disabled]{opacity:.55;}
+.status-tag{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:500;}
+.st-unpaid,.st-paid{background:var(--brand-bg);color:var(--brand);}
+.st-shipped{background:#e9f7ef;color:var(--ok);}
+.st-completed{background:#f2f2f2;color:#777;}
+.st-refunded{background:#fdeef0;color:var(--danger);}
+.st-cancelled{background:#f2f2f2;color:#999;}
+.empty{padding:90px 30px;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;font-size:13px;}
+.empty-icon{font-size:56px;margin-bottom:14px;}
+.loading-more{text-align:center;color:var(--muted);font-size:12px;padding:14px 0 22px;}
+.ellipsis2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* 首页 */
+.header{background:#fff;padding:10px 12px;position:sticky;top:0;z-index:10;}
+.search-bar{width:100%;height:36px;background:var(--bg);border-radius:20px;display:flex;align-items:center;padding:0 14px;}
+.search-icon{font-size:14px;margin-right:6px;color:#999;}
+.search-input{flex:1;height:100%;border:none;background:transparent;font-size:13px;color:#333;outline:none;}
+.search-input::placeholder{color:#b0b0b0;}
+.cat-nav{width:100%;background:#fff;white-space:nowrap;padding:6px 0 10px;}
+.cat-list{display:inline-flex;padding:0 12px;}
+.cat-item{flex-shrink:0;height:30px;line-height:30px;padding:0 16px;margin-right:10px;border-radius:15px;background:#f2f2f2;color:#555;font-size:13px;cursor:pointer;}
+.cat-item:last-child{margin-right:0;}
+.cat-item.active{background:var(--brand);color:#fff;font-weight:600;}
+.goods-grid{display:flex;flex-wrap:wrap;justify-content:space-between;padding:10px 12px;}
+.goods-card{width:calc((100% - 10px)/2);background:#fff;border-radius:8px;box-shadow:var(--sh);overflow:hidden;margin-bottom:10px;cursor:pointer;transition:transform .12s;}
+.goods-card:active{transform:scale(.98);}
+.goods-thumb{width:100%;aspect-ratio:1/1;background:#f7f7f7;}
+.goods-img{width:100%;height:100%;display:block;object-fit:cover;}
+.goods-info{padding:8px;}
+.goods-title{font-size:13px;font-weight:600;color:#222;line-height:1.4;height:36px;}
+.goods-bottom{display:flex;align-items:baseline;justify-content:space-between;margin-top:8px;}
+.goods-price{color:var(--price);font-size:16px;font-weight:800;}
+.goods-sales{color:#999;font-size:11px;}
+/* 详情 */
+.gallery{width:100%;aspect-ratio:1/1;background:#fff;position:relative;}
+.gallery img{width:100%;height:100%;object-fit:cover;}
+.gallery-dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:5px;}
+.gallery-dots i{width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.2);}
+.gallery-dots i.on{width:16px;background:var(--brand);}
+.d-card{margin:10px 12px 0;padding:14px;background:#fff;border-radius:8px;box-shadow:var(--sh);}
+.price-row{display:flex;align-items:baseline;}
+.main-price{font-size:28px;font-weight:800;}
+.d-sales{margin-left:auto;font-size:12px;color:var(--muted);}
+.d-title{font-size:17px;font-weight:700;line-height:1.45;margin-top:8px;}
+.d-sub{font-size:12px;color:var(--muted);margin-top:5px;}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.tag{font-size:11px;color:var(--brand);background:var(--brand-bg);border-radius:4px;padding:3px 8px;}
+.service{display:flex;flex-wrap:wrap;gap:6px 14px;}
+.service span{font-size:12px;color:var(--ok);}
+.sec-title{font-size:15px;font-weight:700;margin-bottom:12px;}
+.sku-row{display:flex;flex-wrap:wrap;gap:9px;}
+.sku-item{padding:7px 16px;border:1px solid #e8e8e8;border-radius:6px;font-size:13px;color:var(--text2);background:#fafafa;cursor:pointer;}
+.sku-item.on{border-color:var(--brand);color:var(--brand);background:var(--brand-bg);font-weight:600;}
+.sku-stock{margin-top:10px;font-size:12px;color:var(--muted);}
+.qty-row{display:flex;align-items:center;justify-content:space-between;}
+.qty-row .sec-title{margin-bottom:0;}
+.stepper{display:flex;align-items:center;gap:4px;}
+.step-btn{width:26px;height:26px;line-height:22px;text-align:center;border:1px solid #e3e3e3;border-radius:6px;font-size:15px;color:var(--text2);background:#fff;cursor:pointer;}
+.step-btn.plus{color:var(--brand);border-color:var(--brand);background:var(--brand-bg);}
+.step-num{width:34px;text-align:center;font-weight:700;font-size:14px;}
+.spec-row{display:flex;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.spec-row:last-child{border-bottom:none;}
+.spec-label{width:90px;color:var(--muted);flex-shrink:0;}
+.spec-value{flex:1;color:var(--text2);}
+.action-bar{position:absolute;left:0;right:0;bottom:64px;height:56px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.06);display:flex;align-items:center;padding:0 12px;gap:12px;z-index:60;}
+.action-cart{display:flex;flex-direction:column;align-items:center;font-size:10px;color:var(--text2);width:48px;cursor:pointer;}
+.action-cart b{font-size:20px;font-weight:400;}
+.action-buy{flex:1;height:40px;}
+/* 客服 */
+.chat-top{background:var(--g-brand);padding:42px 14px 14px;display:flex;align-items:center;justify-content:space-between;}
+.chat-brand{display:flex;align-items:center;color:#fff;font-size:16px;font-weight:700;}
+.chat-logo{width:30px;height:30px;border-radius:8px;margin-right:8px;background:#fff;}
+.chat-logo img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
+.chat-top-actions{display:flex;gap:7px;}
+.new-btn{font-size:11px;color:#fff;border:1px solid rgba(255,255,255,.7);border-radius:14px;padding:3px 10px;cursor:pointer;}
+.msg-list{padding:14px;}
+.msg-row{display:flex;align-items:flex-start;margin-bottom:16px;}
+.msg-user{flex-direction:row-reverse;}
+.msg-avatar{width:36px;height:36px;border-radius:8px;flex-shrink:0;background:#fff;}
+.msg-bubble{max-width:74%;margin-left:9px;padding:10px 13px;background:#fff;border-radius:4px 12px 12px 12px;box-shadow:var(--sh);font-size:13px;line-height:1.6;}
+.msg-user .msg-bubble{margin-left:0;margin-right:9px;background:var(--g-brand);color:#fff;border-radius:12px 4px 12px 12px;}
+.card-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+.msg-card{width:47%;background:var(--brand-bg);border:1px solid #ffd9bf;border-radius:6px;padding:7px 9px;cursor:pointer;}
+.msg-card .t{font-size:11px;line-height:1.4;color:var(--text2);}
+.msg-card .p{font-size:14px;font-weight:800;color:var(--price);margin-top:4px;}
+.cite-row{margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);font-size:10px;color:var(--muted);}
+.cite-tag{color:var(--brand);background:var(--brand-bg);border-radius:4px;padding:1px 6px;margin-right:5px;}
+.human-hint{margin-top:6px;font-size:11px;color:var(--brand);}
+.typing{display:flex;gap:5px;align-items:center;padding:12px 13px;}
+.typing i{width:7px;height:7px;border-radius:50%;background:#ccc;animation:blink 1.2s infinite;}
+.typing i:nth-child(2){animation-delay:.2s;}.typing i:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
+.input-bar{position:absolute;left:0;right:0;bottom:64px;display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,.05);z-index:60;}
+.chat-input{flex:1;height:36px;background:var(--bg);border-radius:18px;padding:0 14px;font-size:13px;border:none;outline:none;}
+.send-btn{height:36px;line-height:36px;padding:0 20px;border-radius:18px;background:var(--g-brand);color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+/* 订单 */
+.order-list{padding:10px 12px;}
+.order-card{background:#fff;border-radius:8px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden;}
+.order-head{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-bottom:1px solid var(--line);}
+.order-id{font-size:12px;color:var(--muted);}
+.order-goods{padding:11px 13px;}
+.goods-line{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;}
+.goods-name{flex:1;font-size:13px;line-height:1.45;margin-right:10px;}
+.goods-meta{font-size:12px;color:var(--muted);white-space:nowrap;}
+.track-row{display:flex;align-items:center;background:#f7faf8;border-radius:6px;padding:8px 11px;margin:0 13px 8px;font-size:11px;color:var(--ok);}
+.order-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-top:1px solid var(--line);}
+.order-amount{font-size:12px;color:var(--text2);}
+.order-amount .price{font-size:18px;margin:0 3px;}
+.order-time{display:block;font-size:10px;color:var(--muted);margin-top:3px;}
+.order-actions{display:flex;gap:7px;}
+/* 我的 */
+.user-hero{background:var(--g-brand);padding:46px 22px 34px;border-radius:0 0 22px 22px;display:flex;align-items:center;}
+.user-avatar{width:62px;height:62px;border-radius:18px;overflow:hidden;border:2px solid rgba(255,255,255,.6);background:#fff;flex-shrink:0;}
+.user-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-meta{margin-left:16px;}
+.user-name{color:#fff;font-size:20px;font-weight:800;}
+.user-role{display:inline-block;margin-top:6px;font-size:10px;color:var(--brand);background:#fff;border-radius:5px;padding:2px 9px;font-weight:600;}
+.menu{margin:12px;background:#fff;border-radius:8px;box-shadow:var(--sh);padding:0 14px;}
+.menu-item{display:flex;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);cursor:pointer;}
+.menu-item:last-child{border-bottom:none;}
+.menu-icon{font-size:19px;width:30px;}
+.menu-text{flex:1;font-size:14px;color:var(--text);margin-left:6px;}
+.menu-arrow{color:#ccc;font-size:18px;}
+.logout-btn{width:calc(100% - 24px);margin:6px 12px 0;height:44px;line-height:42px;text-align:center;color:var(--danger);border:1px solid var(--danger);border-radius:22px;font-size:14px;font-weight:700;background:#fff;cursor:pointer;}
+.foot-tip{text-align:center;font-size:10px;color:var(--muted);margin-top:22px;}
+/* 说明 */
+.tips{max-width:330px;color:#6b7080;font-size:13px;line-height:1.95;}
+.tips b{color:#222;}
+.tips .img-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.tips .img-list img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid #fff;box-shadow:var(--sh);}
 </style>
 </head>
 <body>
-
 <div class="preview-head">
   <div class="logo-row">
     <img class="logo-img" src="images/logo.jpg" alt="" />
     <h1>星途商城 · 小程序视觉预览</h1>
   </div>
-  <p>wx 端页面视觉预览（真实商品图 + 5 页面）｜ 管理端 http://localhost:3000</p>
+  <p>极简橙主题 · 与小程序代码 1:1 同步 ｜ 主色 #ff6a00</p>
 </div>
-
 <div class="page-tabs">
   <div class="page-tab active" data-p="home">🏠 首页</div>
   <div class="page-tab" data-p="detail">🛍 详情</div>
@@ -243,7 +190,6 @@ body {
   <div class="page-tab" data-p="orders">📦 订单</div>
   <div class="page-tab" data-p="mine">👤 我的</div>
 </div>
-
 <div class="stage">
   <div class="phone">
     <div class="phone-screen">
@@ -253,277 +199,316 @@ body {
       <div id="chat" class="screen" style="display:none"></div>
       <div id="orders" class="screen" style="display:none"></div>
       <div id="mine" class="screen" style="display:none"></div>
-      <!-- tabBar -->
-      <div class="tabbar" id="tabbar">
+      <div class="tabbar">
         <div class="tab-item on" data-tab="home"><span class="tab-icon">🏠</span>首页</div>
-        <div class="tab-item" data-tab="detail"><span class="tab-icon">🛍</span>详情</div>
+        <div class="tab-item" data-tab="cart"><span class="tab-icon">🛒</span>购物车</div>
         <div class="tab-item" data-tab="chat"><span class="tab-icon">🤖</span>客服</div>
         <div class="tab-item" data-tab="orders"><span class="tab-icon">📦</span>订单</div>
         <div class="tab-item" data-tab="mine"><span class="tab-icon">👤</span>我的</div>
       </div>
     </div>
   </div>
-
   <div class="tips">
-    <p>💡 这是 <b>wx 微信小程序</b> 的视觉预览：真实商品图（已下载到 <code>web-preview/images/</code>）、Banner 装饰图、tabBar 底栏。</p>
-    <p>🌐 <b>管理端 client</b>：<code>http://localhost:3000</code>（admin / Admin@123456）。</p>
-    <p>📱 <b>真机</b>：微信开发者工具导入 <code>wx/</code> 编译。</p>
-    <p>🖼 图片资源共 <b>26 张</b>：13 张商品图（P10009~P10021）+ 8 张联网搜索场景图 + 3 Banner + Logo/头像。</p>
+    <p>🎨 设计语言：<b>极简橙</b>（#ff6a00）+ 浅灰底（#f5f5f5），参考主流电商 App。</p>
+    <p>🧱 与小程序 <b>WXML/WXSS 1:1</b>：搜索胶囊、横滑分类、双列网格、卡片 8px 圆角淡阴影。</p>
+    <p>🔧 关键修复：原工程只启用 TS 编译插件、未启用 less，所有 <code>.less</code> 均未生效；已全部改为原生 <b>WXSS</b>。</p>
+    <p>🖼 13 张真实商品白底图 + 实景图，图文对应。</p>
     <div class="img-list">
-      <img src="images/P10009.jpg" /><img src="images/P10010.jpg" /><img src="images/P10011.jpg" />
-      <img src="images/P10012.jpg" /><img src="images/P10013.jpg" /><img src="images/P10014.jpg" />
-      <img src="images/P10015.jpg" /><img src="images/P10017.jpg" /><img src="images/P10019.jpg" />
-      <img src="images/scene-garden-1.jpg" /><img src="images/scene-post-1.jpg" /><img src="images/scene-wall-1.jpg" />
+      <img src="images/P10009.jpg"/><img src="images/P10016.jpg"/><img src="images/P10017.jpg"/>
+      <img src="images/P10020.jpg"/><img src="images/P10021.jpg"/><img src="images/logo.jpg"/>
     </div>
   </div>
 </div>
-
 <script>
-const IMG = {
-  P10009: 'images/P10009.jpg', P10010: 'images/P10010.jpg', P10011: 'images/P10011.jpg',
-  P10012: 'images/P10012.jpg', P10013: 'images/P10013.jpg', P10014: 'images/P10014.jpg',
-  P10015: 'images/P10015.jpg', P10016: 'images/P10016.jpg', P10017: 'images/P10017.jpg',
-  P10018: 'images/P10018.jpg', P10019: 'images/P10019.jpg', P10020: 'images/P10020.jpg',
-  P10021: 'images/P10021.jpg',
-};
-// 联网搜索补充的场景图（用于详情页图集轮播）
-const SCENES = [
-  'images/scene-garden-1.jpg', 'images/scene-garden-2.jpg', 'images/scene-garden-3.jpg',
-  'images/scene-post-1.jpg', 'images/scene-post-2.jpg',
-  'images/scene-wall-1.jpg', 'images/scene-wall-2.jpg', 'images/scene-wall-3.jpg',
+/* ===== 数据（与小程序 /shop/products 一致） ===== */
+const IMG = {};
+for (let i = 10009; i <= 10021; i++) IMG['P' + i] = `images/P${i}.jpg`;
+const SCENES = [1,2,3,4,5,6].map(i => `images/detail-scene-${i}.jpg`);
+const CATEGORIES = [
+  { code: '', name: '全部' },
+  { code: 'post', name: '柱头灯' },
+  { code: 'wall', name: '户外壁灯' },
+  { code: 'garden', name: '庭院灯' },
+  { code: 'solar', name: '太阳能' },
 ];
 const SAMPLE = [
-  { id: 'P10009', title: '太阳能柱头灯户外防水现代简约LED庭院灯福字方形围墙灯后现代', subtitle: '星途户外照明', price: 350, original: 399, sales: 128 },
-  { id: 'P10010', title: '太阳能柱头灯中式庭院灯户外防水别墅大门围墙灯不锈钢景观灯新中式', subtitle: '星途户外照明', price: 150, original: 0, sales: 86 },
-  { id: 'P10011', title: '太阳能柱头灯户外庭院中式别墅围墙立柱灯自动开关智能光控新中式', subtitle: '星途户外照明', price: 110, original: 0, sales: 64 },
-  { id: 'P10012', title: '中式复古柱头灯户外防水LED庭院灯菱形格栅装饰灯新中式', subtitle: '星途户外照明', price: 125, original: 0, sales: 52 },
-  { id: 'P10013', title: '太阳能柱头灯户外庭院别墅围墙立柱灯中式复古门柱灯新中式', subtitle: '星途户外照明', price: 88, original: 0, sales: 39 },
-  { id: 'P10014', title: '中式太阳能柱头灯LED户外庭院灯山水装饰照明灯具新中式', subtitle: '星途户外照明', price: 135, original: 0, sales: 30 },
-  { id: 'P10015', title: '中式复古柱头灯别墅庭院围墙灯户外防水太阳能柱子灯新中式', subtitle: '星途户外照明', price: 120, original: 0, sales: 26 },
-  { id: 'P10016', title: '太阳能柱头灯户外防水别墅庭院灯中式围墙门柱氛围景观灯后现代', subtitle: '星途户外照明', price: 180, original: 220, sales: 21 },
-  { id: 'P10017', title: '现代简约LED壁灯户外防水IP65玻璃灯罩壁挂灯具3000K-4000K', subtitle: '星途户外照明', price: 100, original: 0, sales: 18 },
-  { id: 'P10018', title: '中式古典柱头灯方形福字装饰庭院围墙灯太阳能户外灯具', subtitle: '星途户外照明', price: 160, original: 199, sales: 15 },
-  { id: 'P10019', title: '中式LED壁挂式户外壁灯玻璃灯罩铝材防水庭院灯具2700K-3000K', subtitle: '星途户外照明', price: 105, original: 0, sales: 12 },
-  { id: 'P10020', title: '太阳能壁灯户外防水别墅庭院门口灯人体感应壁灯', subtitle: '星途户外照明', price: 145, original: 0, sales: 9 },
-  { id: 'P10021', title: '新中式太阳能柱头灯户外庭院灯别墅围墙灯景观灯', subtitle: '星途户外照明', price: 168, original: 208, sales: 7 },
+  { product_id:'P10009', title:'太阳能柱头灯户外防水现代简约LED庭院灯福字方形围墙灯后现代', category_code:'post', price:350, original_price:399, sales_count:4100 },
+  { product_id:'P10010', title:'太阳能柱头灯中式庭院灯户外防水别墅大门围墙灯不锈钢景观灯新中式', category_code:'post', price:150, original_price:0, sales_count:860 },
+  { product_id:'P10011', title:'太阳能柱头灯户外庭院中式别墅围墙立柱灯自动开关智能光控新中式', category_code:'post', price:110, original_price:0, sales_count:640 },
+  { product_id:'P10012', title:'中式复古柱头灯户外防水LED庭院灯菱形格栅装饰灯新中式', category_code:'post', price:125, original_price:0, sales_count:520 },
+  { product_id:'P10013', title:'太阳能柱头灯户外庭院别墅围墙立柱灯中式复古门柱灯新中式', category_code:'post', price:88, original_price:0, sales_count:390 },
+  { product_id:'P10014', title:'中式太阳能柱头灯LED户外庭院灯山水装饰照明灯具新中式', category_code:'post', price:135, original_price:0, sales_count:300 },
+  { product_id:'P10015', title:'中式复古柱头灯别墅庭院围墙灯户外防水太阳能柱子灯新中式', category_code:'post', price:120, original_price:0, sales_count:260 },
+  { product_id:'P10016', title:'太阳能柱头灯户外防水别墅庭院灯中式围墙门柱氛围景观灯后现代', category_code:'solar', price:180, original_price:220, sales_count:12600 },
+  { product_id:'P10017', title:'现代简约LED壁灯户外防水IP65玻璃灯罩壁挂灯具3000K-4000K', category_code:'wall', price:100, original_price:0, sales_count:1820 },
+  { product_id:'P10018', title:'中式古典柱头灯方形福字装饰庭院围墙灯太阳能户外灯具', category_code:'post', price:160, original_price:199, sales_count:150 },
+  { product_id:'P10019', title:'中式LED壁挂式户外壁灯玻璃灯罩铝材防水庭院灯具2700K-3000K', category_code:'wall', price:105, original_price:0, sales_count:120 },
+  { product_id:'P10020', title:'太阳能壁灯户外防水别墅庭院门口灯人体感应壁灯', category_code:'wall', price:145, original_price:0, sales_count:860 },
+  { product_id:'P10021', title:'新中式太阳能柱头灯户外庭院灯别墅围墙灯景观灯', category_code:'post', price:168, original_price:208, sales_count:720 },
 ];
+const fmt = n => Number(n).toFixed(2);
+function formatSales(n){ return n >= 10000 ? (n/10000).toFixed(1).replace(/\.0$/,'') + '万' : String(n||0); }
 
-function fmt(n) { return Number(n).toFixed(2); }
-function imgsrc(id) { return IMG[id] || ''; }
+let GOODS = SAMPLE.map(g => ({ ...g, cover: IMG[g.product_id], sales_text: formatSales(g.sales_count) }));
+let activeCategory = '', keyword = '', detailId = 'P10009';
 
-function renderHome(list) {
-  const cols = [[], []];
-  list.forEach((g, i) => cols[i % 2].push(g));
-  const col = (arr) => arr.map((g) => `
-    <div class="goods">
-      <div class="goods-img">
-        <img src="${imgsrc(g.id)}" onerror="this.parentNode.innerHTML='🏮'" />
-        ${g.original > g.price ? '<span class="goods-sale">促销</span>' : ''}
-      </div>
-      <div class="goods-body">
-        <div class="goods-title">${g.title}</div>
-        <div class="goods-sub">${g.subtitle} · 已售 ${g.sales}</div>
-        <div class="goods-foot">
-          <span><span class="price">¥${fmt(g.price)}</span>${g.original > g.price ? `<span class="price-old">¥${fmt(g.original)}</span>` : ''}</span>
-          <span class="goods-add">＋</span>
-        </div>
-      </div>
-    </div>`).join('');
-  document.getElementById('home').innerHTML = `
-    <div class="search-bar">
-      <div class="search-box"><span>🔍</span>搜索庭院灯 / 壁灯 / 太阳能…</div>
-      <div class="cart-btn">🛒<span class="badge-num">3</span></div>
-    </div>
-    <div class="banner">
-      <img id="bannerImg" class="bg" src="images/banner1.jpg" alt="星途户外照明" />
-      <div class="banner-dots" id="bannerDots"><i class="on"></i><i></i><i></i></div>
-    </div>
-    <div class="cat-bar">
-      <span class="cat-item on">全部</span><span class="cat-item">柱头灯</span><span class="cat-item">户外壁灯</span><span class="cat-item">太阳能庭院灯</span>
-    </div>
-    <div class="waterfall"><div class="wf-col">${col(cols[0])}</div><div class="wf-col">${col(cols[1])}</div></div>`;
-}
-
-function renderDetail(list) {
-  const g = list[0];
-  document.getElementById('detail').innerHTML = `
-    <div class="detail-swiper">
-      <img class="main" id="detailMain" src="${imgsrc(g.id)}" onerror="this.style.display='none'" />
-      <div class="detail-dots" id="detailDots"></div>
-    </div>
-    <div class="detail-thumbs" id="detailThumbs"></div>
-    <div class="detail-info card" style="margin:12px 14px">
-      <div><span class="detail-price">¥${fmt(g.price)}</span>${g.original > g.price ? `<span class="price-old" style="font-size:13px">¥${fmt(g.original)}</span>` : ''}</div>
-      <div style="font-size:15px;font-weight:600;margin-top:8px;line-height:1.5">${g.title}</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px">${g.subtitle} · 已售 ${g.sales}</div>
-    </div>
-    <div class="service-bar"><span>✓ 7天无理由退换</span><span>✓ 全国包邮</span><span>✓ 1年质保</span></div>
-    <div class="sec card">
-      <div class="sec-title">选择规格</div>
-      <div class="sku-row"><span class="sku-item on">默认规格</span><span class="sku-item">暖光 3000K</span><span class="sku-item">白光 4000K</span></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:8px">库存：50</div>
-    </div>
-    <div class="sec card qty-row">
-      <div class="sec-title" style="margin-bottom:0">购买数量</div>
-      <div class="stepper"><span class="step">−</span><span class="step-num">1</span><span class="step plus">＋</span></div>
-    </div>
-    <div class="action-bar">
-      <div class="action-cart"><i>🛒</i>加入购物车</div>
-      <div class="buy-btn">立即购买</div>
-    </div>`;
-  setTimeout(() => bindDetailGallery(g.id), 0);
-}
-
-// 详情页图集：商品主图 + 联网搜索场景图
-function bindDetailGallery(productId) {
-  const main = document.getElementById('detailMain');
-  const thumbs = document.getElementById('detailThumbs');
-  const dots = document.getElementById('detailDots');
-  if (!main || !thumbs) return;
-  const startIdx = Math.abs(SCENES.length ? (productId.charCodeAt(5) % SCENES.length) : 0);
-  const gallery = [imgsrc(productId), ...SCENES.slice(startIdx, startIdx + 3)].filter(Boolean);
-  if (!gallery.length) return;
-  let cur = 0;
-  const paint = () => {
-    main.src = gallery[cur];
-    dots.innerHTML = gallery.map((_, i) => `<i class="${i === cur ? 'on' : ''}"></i>`).join('');
-    thumbs.querySelectorAll('img').forEach((el, i) => el.classList.toggle('on', i === cur));
-  };
-  thumbs.innerHTML = gallery
-    .map((src, i) => `<img src="${src}" data-i="${i}" onerror="this.style.visibility='hidden'" />`)
-    .join('');
-  thumbs.querySelectorAll('img').forEach((el) => {
-    el.addEventListener('click', () => { cur = Number(el.dataset.i); paint(); });
+function filtered(){
+  return GOODS.filter(g => {
+    const okCat = !activeCategory || g.category_code === activeCategory;
+    const okKw = !keyword || g.title.includes(keyword);
+    return okCat && okKw;
   });
-  paint();
 }
 
-function renderChat(list) {
+/* ===== 首页 ===== */
+function renderHome(){
+  const list = filtered();
+  document.getElementById('home').innerHTML = `
+    <div class="header">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="kw" placeholder="搜索商品" value="${keyword}" />
+      </div>
+    </div>
+    <div class="cat-nav">
+      <div class="cat-list">
+        ${CATEGORIES.map(c=>`<div class="cat-item ${activeCategory===c.code?'active':''}" data-code="${c.code}">${c.name}</div>`).join('')}
+      </div>
+    </div>
+    ${list.length ? `<div class="goods-grid">
+      ${list.map(g=>`
+        <div class="goods-card" data-id="${g.product_id}">
+          <div class="goods-thumb"><img class="goods-img" src="${g.cover}" onerror="this.style.visibility='hidden'"/></div>
+          <div class="goods-info">
+            <div class="goods-title">${g.title}</div>
+            <div class="goods-bottom">
+              <span class="goods-price">¥${fmt(g.price)}</span>
+              <span class="goods-sales">已售 ${g.sales_text}</span>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>` : `<div class="empty"><span class="empty-icon">🛍</span>暂无相关商品</div>`}
+    <div class="loading-more">— 共 ${list.length} 件商品 —</div>`;
+
+  document.querySelectorAll('#home .cat-item').forEach(el=>el.onclick=()=>{ activeCategory = el.dataset.code; renderHome(); });
+  const kw = document.getElementById('kw');
+  kw.oninput = ()=>{ keyword = kw.value.trim(); };
+  kw.onkeydown = e=>{ if(e.key==='Enter'){ keyword = kw.value.trim(); renderHome(); } };
+  document.querySelectorAll('#home .goods-card').forEach(el=>el.onclick=()=>openDetail(el.dataset.id));
+}
+
+/* ===== 详情 ===== */
+let detailIdx = 0, qtyN = 1, galleryTimer = null;
+function openDetail(id){ detailId = id; detailIdx = 0; qtyN = 1; switchPage('detail'); }
+function galleryFor(pid){
+  const start = (pid.charCodeAt(5) || 0) % SCENES.length;
+  return [IMG[pid], SCENES[start%6], SCENES[(start+1)%6], SCENES[(start+2)%6]];
+}
+function renderDetail(){
+  const g = GOODS.find(x=>x.product_id===detailId) || GOODS[0];
+  const gallery = galleryFor(g.product_id);
+  document.getElementById('detail').innerHTML = `
+    <div class="gallery">
+      <img id="gMain" src="${gallery[0]}" />
+      <div class="gallery-dots" id="gDots">${gallery.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join('')}</div>
+    </div>
+    <div class="d-card">
+      <div class="price-row">
+        <span class="main-price price">¥${fmt(g.price)}</span>
+        ${g.original_price>g.price?`<span class="price-old">¥${fmt(g.original_price)}</span>`:''}
+        <span class="d-sales">已售 ${g.sales_text}</span>
+      </div>
+      <div class="d-title">${g.title}</div>
+      <div class="d-sub">星途户外照明 · IP65 防水 · 顺丰发货</div>
+      <div class="tag-row"><span class="tag">IP65防水</span><span class="tag">全国包邮</span><span class="tag">1年质保</span></div>
+    </div>
+    <div class="d-card service">
+      <span>✓ 7天无理由</span><span>✓ 全国包邮</span><span>✓ 1年质保</span><span>✓ 48h发货</span>
+    </div>
+    <div class="d-card">
+      <div class="sec-title">选择规格</div>
+      <div class="sku-row" id="skuRow">
+        <span class="sku-item on">默认规格</span><span class="sku-item">暖光 3000K</span><span class="sku-item">白光 4000K</span>
+      </div>
+      <div class="sku-stock">库存：充足</div>
+    </div>
+    <div class="d-card qty-row">
+      <div class="sec-title">购买数量</div>
+      <div class="stepper"><span class="step-btn" id="minus">−</span><span class="step-num" id="qnum">1</span><span class="step-btn plus" id="plus">＋</span></div>
+    </div>
+    <div class="d-card">
+      <div class="sec-title">规格参数</div>
+      <div class="spec-row"><span class="spec-label">品牌</span><span class="spec-value">星途 XINGTU</span></div>
+      <div class="spec-row"><span class="spec-label">材质</span><span class="spec-value">不锈钢 / 压铸铝 + 钢化玻璃</span></div>
+      <div class="spec-row"><span class="spec-label">光源</span><span class="spec-value">LED 暖光 3000K（可选 4000K）</span></div>
+      <div class="spec-row"><span class="spec-label">防护等级</span><span class="spec-value">IP65 防水防雷</span></div>
+      <div class="spec-row"><span class="spec-label">供电方式</span><span class="spec-value">太阳能光控 / 接电可选</span></div>
+    </div>
+    <div style="height:80px"></div>
+    <div class="action-bar">
+      <div class="action-cart" onclick="switchPage('chat')"><b>🤖</b>客服</div>
+      <div class="action-cart" onclick="switchPage('home')"><b>🏠</b>店铺</div>
+      <button class="btn btn-ghost" style="width:110px" onclick="goCartHint()">加入购物车</button>
+      <button class="btn btn-primary action-buy">立即购买</button>
+    </div>`;
+  // 轮播
+  clearInterval(galleryTimer);
+  galleryTimer = setInterval(()=>{
+    if(document.getElementById('detail').style.display==='none') return;
+    detailIdx = (detailIdx+1) % gallery.length;
+    document.getElementById('gMain').src = gallery[detailIdx];
+    document.querySelectorAll('#gDots i').forEach((d,i)=>d.classList.toggle('on',i===detailIdx));
+  }, 3000);
+  document.querySelectorAll('#skuRow .sku-item').forEach(el=>el.onclick=()=>{
+    document.querySelectorAll('#skuRow .sku-item').forEach(x=>x.classList.remove('on')); el.classList.add('on');
+  });
+  document.getElementById('minus').onclick=()=>{ qtyN=Math.max(1,qtyN-1); document.getElementById('qnum').textContent=qtyN; };
+  document.getElementById('plus').onclick=()=>{ qtyN++; document.getElementById('qnum').textContent=qtyN; };
+}
+function goCartHint(){ alert('演示：已加入购物车（小程序内写入本地购物车）'); }
+/* ===== AI 客服 ===== */
+function renderChat(){
   document.getElementById('chat').innerHTML = `
     <div class="chat-top">
-      <div class="chat-brand"><span class="chat-logo"><img src="images/logo.jpg" /></span>星途 AI 智能客服</div>
-      <div class="chat-actions"><span class="chat-btn">🕘 历史</span><span class="chat-btn">＋ 新会话</span></div>
+      <div class="chat-brand"><span class="chat-logo"><img src="images/logo.jpg"/></span>星途 AI 智能客服</div>
+      <div class="chat-top-actions"><span class="new-btn">🕘 历史</span><span class="new-btn">＋ 新会话</span></div>
     </div>
-    <div class="chat-list">
-      <div class="msg assistant">
-        <div class="msg-avatar"><img src="images/logo.jpg" /></div>
-        <div class="msg-bubble">你好，我是星途 AI 智能客服 🤖<br>可以为你解答商品 / 订单 / 售后问题～</div>
+    <div class="msg-list">
+      <div class="msg-row">
+        <img class="msg-avatar" src="images/logo.jpg"/>
+        <div class="msg-bubble">你好，我是星途 AI 智能客服 🌙<br>可为你解答 <b>商品 / 订单 / 售后</b> 问题～</div>
       </div>
-      <div class="msg user"><div class="msg-bubble">推荐一款防水的太阳能庭院灯</div></div>
-      <div class="msg assistant">
-        <div class="msg-avatar"><img src="images/logo.jpg" /></div>
-        <div class="msg-bubble">
-          推荐太阳能庭院灯与柱头灯，防水等级 IP65，天黑自动亮灯，充满电可亮 8-12 小时。
+      <div class="msg-row msg-user">
+        <img class="msg-avatar" src="images/avatar.png"/>
+        <div class="msg-bubble">推荐一款防水的太阳能庭院灯</div>
+      </div>
+      <div class="msg-row">
+        <img class="msg-avatar" src="images/logo.jpg"/>
+        <div class="msg-bubble">为你推荐两款热卖 👇 均为 IP65 防水、光控天黑自动亮、满电续航 8–12 小时：
           <div class="card-row">
-            <div class="card-mini"><div class="t">${list[0].title}</div><div class="p">¥${fmt(list[0].price)}</div></div>
-            <div class="card-mini"><div class="t">${list[1].title}</div><div class="p">¥${fmt(list[1].price)}</div></div>
+            <div class="msg-card" data-id="${GOODS[0].product_id}"><div class="t ellipsis2">${GOODS[0].title}</div><div class="p">¥${fmt(GOODS[0].price)}</div></div>
+            <div class="msg-card" data-id="${GOODS[7].product_id}"><div class="t ellipsis2">${GOODS[7].title}</div><div class="p">¥${fmt(GOODS[7].price)}</div></div>
           </div>
-          <div class="cite">📚 参考：商品咨询</div>
+          <div class="cite-row"><span class="cite-tag">📚 参考</span>商品知识库 · 户外灯具选购指南</div>
         </div>
+      </div>
+      <div class="msg-row">
+        <img class="msg-avatar" src="images/logo.jpg"/>
+        <div class="msg-bubble typing"><i></i><i></i><i></i></div>
       </div>
     </div>
-    <div class="chat-input-bar"><div class="chat-input">问问商品、订单或售后…</div><div class="send-btn">发送</div></div>`;
+    <div class="input-bar">
+      <input class="chat-input" placeholder="问问商品、订单或售后…"/>
+      <span class="send-btn">发送</span>
+    </div>`;
+  document.querySelectorAll('#chat .msg-card').forEach(el=>el.onclick=()=>openDetail(el.dataset.id));
 }
 
-function renderOrders(list) {
-  const rows = [
-    { id: '2026.10.6.15.0.6', g: list[0], n: 1, amount: list[0].price, status: 'unpaid', cls: 'st-unpaid', txt: '待支付' },
-    { id: '2026.10.3.14.0.3', g: list[1], n: 2, amount: list[1].price * 2, status: 'shipped', cls: 'st-shipped', txt: '待收货', track: '🚚 顺丰速运 SF1234567890' },
-    { id: '2026.10.4.16.0.4', g: list[2], n: 1, amount: list[2].price, status: 'completed', cls: 'st-completed', txt: '已完成' },
-    { id: '2026.10.5.9.0.5', g: list[3], n: 1, amount: list[3].price, status: 'refunded', cls: 'st-refunded', txt: '已退款', track: '↩️ 退款 RFD20261007001' },
-  ];
-  document.getElementById('orders').innerHTML = rows.map((o) => `
-    <div class="card" style="margin:12px 14px">
-      <div class="order-head"><span>订单 ${o.id}</span><span class="status-tag ${o.cls}">${o.txt}</span></div>
-      <div class="order-goods">
-        <div class="goods-line">
-          <span class="thumb"><img src="${imgsrc(o.g.id)}" onerror="this.parentNode.innerHTML='🏮'" /></span>
-          <span class="name">${o.g.title}</span>
-          <span>¥${fmt(o.amount / o.n)} × ${o.n}</span>
+/* ===== 订单 ===== */
+const ORDERS = [
+  { id:'202610061500006', g:0, n:1, status:'unpaid', cls:'st-unpaid', txt:'待付款', time:'2026-10-06 15:00' },
+  { id:'202610031400003', g:7, n:2, status:'shipped', cls:'st-shipped', txt:'待收货', time:'2026-10-03 14:20', track:'🚚 顺丰速运 SF1234567890 · 预计明天送达' },
+  { id:'202610041600004', g:8, n:1, status:'completed', cls:'st-completed', txt:'已完成', time:'2026-10-04 16:02' },
+  { id:'202610050900005', g:11, n:1, status:'refunded', cls:'st-refunded', txt:'已退款', time:'2026-10-05 09:40', track:'↩️ 退款已原路返回 · RFD20261007001' },
+];
+function renderOrders(){
+  document.getElementById('orders').innerHTML = `<div class="order-list">
+    ${ORDERS.map(o=>{ const g=GOODS[o.g]; const amount=g.price*o.n; return `
+      <div class="order-card" data-id="${g.product_id}">
+        <div class="order-head">
+          <span class="order-id">订单 ${o.id}</span>
+          <span class="status-tag ${o.cls}">${o.txt}</span>
         </div>
-      </div>
-      ${o.track ? `<div class="track">${o.track}</div>` : ''}
-      <div class="order-foot">
-        <span style="font-size:13px">实付：<span class="price">¥${fmt(o.amount)}</span></span>
-        <div class="order-actions">
-          ${o.status === 'unpaid' ? '<span class="mini-btn mb-ghost">去支付</span><span class="mini-btn mb-cancel">取消订单</span>'
-            : o.status === 'shipped' ? '<span class="mini-btn mb-primary">确认收货</span>' : ''}
+        <div class="order-goods">
+          <div class="goods-line">
+            <span class="goods-name">${g.title}</span>
+            <span class="goods-meta">¥${fmt(g.price)} × ${o.n}</span>
+          </div>
         </div>
-      </div>
-    </div>`).join('');
+        ${o.track?`<div class="track-row">${o.track}</div>`:''}
+        <div class="order-foot">
+          <span class="order-amount">实付：<span class="price">¥${fmt(amount)}</span><span class="order-time">${o.time}</span></span>
+          <span class="order-actions">
+            ${o.status==='unpaid'?'<button class="btn btn-ghost btn-mini">取消</button><button class="btn btn-primary btn-mini">去支付</button>':''}
+            ${o.status==='shipped'?'<button class="btn btn-ghost btn-mini">物流</button><button class="btn btn-primary btn-mini">确认收货</button>':''}
+            ${o.status==='completed'?'<button class="btn btn-ghost btn-mini">再次购买</button><button class="btn btn-ghost btn-mini">售后</button>':''}
+            ${o.status==='refunded'?'<button class="btn btn-ghost btn-mini">退款详情</button>':''}
+          </span>
+        </div>
+      </div>`; }).join('')}
+  </div>`;
+  document.querySelectorAll('#orders .order-card').forEach(el=>el.onclick=()=>openDetail(el.dataset.id));
 }
 
-function renderMine() {
+/* ===== 我的 ===== */
+function renderMine(){
   document.getElementById('mine').innerHTML = `
-    <div class="mine-hero">
-      <div class="mine-avatar"><img src="images/avatar.png" /></div>
-      <div>
-        <div class="mine-name">微信用户_123456</div>
-        <span class="mine-role">普通会员</span>
+    <div class="user-hero">
+      <div class="user-avatar"><img src="images/avatar.png"/></div>
+      <div class="user-meta">
+        <div class="user-name">微信用户_123456</div>
+        <span class="user-role">👑 黄金会员</span>
       </div>
-      <div class="mine-wallet"><div class="l">钱包余额（展示）</div><div class="v">¥2000.00</div></div>
     </div>
-    <div class="mine-menu card">
-      <div class="mine-item"><span class="mine-icon">🤖</span><span class="mine-text">AI 智能客服</span><span class="mine-arrow">›</span></div>
-      <div class="mine-item"><span class="mine-icon">📦</span><span class="mine-text">我的订单</span><span class="mine-arrow">›</span></div>
-      <div class="mine-item"><span class="mine-icon">🛒</span><span class="mine-text">购物车</span><span class="mine-arrow">›</span></div>
-      <div class="mine-item"><span class="mine-icon">🏠</span><span class="mine-text">回到首页</span><span class="mine-arrow">›</span></div>
-      <div class="mine-item"><span class="mine-icon">🔗</span><span class="mine-text">后端地址</span><span class="mine-arrow">›</span></div>
+    <div class="menu">
+      <div class="menu-item" onclick="switchPage('chat')"><span class="menu-icon">🤖</span><span class="menu-text">AI 智能客服</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="switchPage('orders')"><span class="menu-icon">📦</span><span class="menu-text">我的订单</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="cartToast()"><span class="menu-icon">🛒</span><span class="menu-text">购物车</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="switchPage('home')"><span class="menu-icon">🏠</span><span class="menu-text">回到首页</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item"><span class="menu-icon">💰</span><span class="menu-text">钱包余额（展示）¥2000.00</span><span class="menu-arrow">›</span></div>
     </div>
-    <div class="mine-logout">退出登录</div>`;
+    <div class="logout-btn">退出登录</div>
+    <div class="foot-tip">星途户外照明 · 极简橙主题预览</div>`;
 }
 
-function renderAll(list) {
-  renderHome(list); renderDetail(list); renderChat(list); renderOrders(list); renderMine();
+/* ===== 轻提示 ===== */
+let toastTimer = null;
+function cartToast(){
+  let t = document.getElementById('floatToast');
+  if (!t){
+    t = document.createElement('div');
+    t.id = 'floatToast';
+    t.style.cssText = 'position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);background:rgba(0,0,0,.78);color:#fff;font-size:13px;padding:10px 18px;border-radius:10px;z-index:99;pointer-events:none;';
+    document.querySelector('.phone-screen').appendChild(t);
+  }
+  t.textContent = '购物车页见小程序（本地购物车）';
+  t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.style.transition='opacity .3s'; t.style.opacity='0'; }, 1400);
 }
 
-// Banner 轮播（3 张真实灯具图）
-(function bannerCarousel() {
-  const banners = ['images/banner1.jpg', 'images/banner2.jpg', 'images/banner3.jpg'];
-  let index = 0;
-  setInterval(() => {
-    const img = document.getElementById('bannerImg');
-    const dots = document.querySelectorAll('#bannerDots i');
-    if (!img) return;
-    index = (index + 1) % banners.length;
-    img.style.opacity = '0.35';
-    setTimeout(() => {
-      img.src = banners[index];
-      img.style.opacity = '1';
-    }, 220);
-    dots.forEach((d, i) => d.classList.toggle('on', i === index));
-  }, 4000);
-})();
-
-// 页面 / tab 切换
-function switchPage(p) {
-  document.querySelectorAll('.page-tab').forEach((x) => x.classList.toggle('active', x.dataset.p === p));
-  document.querySelectorAll('.tab-item').forEach((x) => x.classList.toggle('on', x.dataset.tab === p));
-  ['home', 'detail', 'chat', 'orders', 'mine'].forEach((id) => {
-    document.getElementById(id).style.display = id === p ? 'block' : 'none';
+/* ===== 页面切换 ===== */
+function switchPage(p){
+  if (p === 'cart'){ cartToast(); return; }
+  document.querySelectorAll('.page-tab').forEach(x=>x.classList.toggle('active', x.dataset.p===p));
+  document.querySelectorAll('.tab-item').forEach(x=>x.classList.toggle('on', x.dataset.tab===p));
+  ['home','detail','chat','orders','mine'].forEach(id=>{
+    document.getElementById(id).style.display = id===p ? 'block' : 'none';
   });
+  if (p==='detail') renderDetail();
+  if (p==='orders') renderOrders();
+  if (p==='mine') renderMine();
+  if (p==='chat') renderChat();
+  document.getElementById(p).scrollTop = 0;
 }
-document.querySelectorAll('.page-tab').forEach((el) => {
-  el.addEventListener('click', () => switchPage(el.dataset.p));
-});
-document.querySelectorAll('.tab-item').forEach((el) => {
-  el.addEventListener('click', () => switchPage(el.dataset.tab));
-});
+document.querySelectorAll('.page-tab').forEach(el=>el.onclick=()=>switchPage(el.dataset.p));
+document.querySelectorAll('.tab-item').forEach(el=>el.onclick=()=>switchPage(el.dataset.tab));
 
-// 优先拉取真实商品接口，失败用内置样例
-(function boot() {
-  fetch('http://localhost:8000/api/v1/shop/products?size=20')
-    .then((r) => r.json())
-    .then((d) => {
-      const list = (d.items || []).map((it) => ({
-        id: it.product_id, title: it.title, subtitle: it.subtitle || '',
-        price: Number(it.price), original: Number(it.original_price || 0),
-        sales: it.sales_count || 0,
-      }));
-      renderAll(list.length ? list : SAMPLE);
-    })
-    .catch(() => renderAll(SAMPLE));
-})();
+/* ===== 启动（优先真实接口，失败用内置数据） ===== */
+function boot(list){
+  if (list && list.length){
+    const mapped = list.map(it=>({
+      product_id: it.product_id, title: it.title, category_code: it.category_code || it.category || '',
+      price: Number(it.price), original_price: Number(it.original_price||0), sales_count: it.sales_count||0,
+    })).filter(g=>IMG[g.product_id]);
+    if (mapped.length){
+      GOODS = mapped.map(g=>({ ...g, cover: IMG[g.product_id], sales_text: formatSales(g.sales_count) }));
+    }
+  }
+  renderHome(); renderDetail(); renderChat(); renderOrders(); renderMine();
+}
+fetch('http://localhost:8000/api/v1/shop/products?size=20')
+  .then(r=>r.json()).then(d=>boot(d.items)).catch(()=>boot());
 </script>
 </body>
 </html>
